@@ -1,17 +1,30 @@
 package domain;
 
+import javafx.util.Pair;
+
 import java.util.List;
 
 public class Table {
     private String name, filename;
-    private List<Attribute> primaryKey;
+    private List<Attribute> primaryKeys;
     private List<Attribute> records;
+    private Pair<String, String> foreignKeys;
+    private List<Index> indexList;
 
     public Table(String name, String filename,  List<Attribute> primaryKey, List<Attribute> records) {
         this.name = name;
         this.filename = filename;
-        this.primaryKey = primaryKey;
+        this.primaryKeys = primaryKey;
         this.records = records;
+    }
+
+    public Table(String name, String filename, List<Attribute> primaryKeys, List<Attribute> records, Pair<String, String> foreignKeys, List<Index> indexList) {
+        this.name = name;
+        this.filename = filename;
+        this.primaryKeys = primaryKeys;
+        this.records = records;
+        this.foreignKeys = foreignKeys;
+        this.indexList = indexList;
     }
 
     public String getName() {
@@ -23,11 +36,11 @@ public class Table {
     }
 
     public List<Attribute> getPrimaryKey() {
-        return primaryKey;
+        return primaryKeys;
     }
 
     public void setPrimaryKey(List<Attribute> primaryKey) {
-        this.primaryKey = primaryKey;
+        this.primaryKeys = primaryKey;
     }
 
     public List<Attribute> getRecords() {

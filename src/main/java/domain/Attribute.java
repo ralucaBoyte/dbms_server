@@ -3,15 +3,20 @@ package domain;
 public class Attribute {
     private String name;
     private Type type;
-    private Integer notNull, length, unique;
+    private Integer notNull, length;
 
 
-    public Attribute(String name, Type type, Integer notNull, Integer length, Integer unique) {
+    public Attribute(String name, Type type, Integer notNull, Integer length) {
         this.name = name;
         this.type = type;
         this.notNull = notNull;
         this.length = length;
-        this.unique = unique;
+    }
+
+    public Attribute(String name, Type type, Integer notNull) {
+        this.name = name;
+        this.type = type;
+        this.notNull = notNull;
     }
 
     public String getName() {
@@ -44,13 +49,5 @@ public class Attribute {
 
     public void setLength(Integer length) {
         this.length = length;
-    }
-
-    public Integer getUnique() {
-        return unique;
-    }
-
-    public void setUnique(Integer unique) {
-        this.unique = unique;
     }
 }

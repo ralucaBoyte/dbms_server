@@ -1,0 +1,12 @@
+
+Z
+java:S1117$"8Rename "file" which hides the field declared at line 15.(ÛÓÙÚûÿÿÿÿ8¹ä¿ÀÑ.
+U	java:S106"9Replace this use of System.out or System.err by a logger.(Áªø8¹ä¿ÀÑ.
+E
+java:S1148*"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ8¹ä¿ÀÑ.
+E
+java:S1148"#Use a logger to log this exception.(€ÉÔ…ıÿÿÿÿ8¹ä¿ÀÑ.
+E
+java:S1068"(Remove this unused "file" private field.(ïÛú8¹ä¿ÀÑ.
+J
+java:S1068"-Remove this unused "databases" private field.(©ÓÅÁ8¹ä¿ÀÑ.
