@@ -6,6 +6,7 @@ public class DatabaseTableDTO {
     private String databaseName;
     private Table table;
 
+    public DatabaseTableDTO() {};
     public DatabaseTableDTO(String databaseName, Table table) {
         this.databaseName = databaseName;
         this.table = table;

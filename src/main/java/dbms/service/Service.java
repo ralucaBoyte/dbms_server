@@ -18,8 +18,18 @@ public class Service implements IService{
         return repository.addDatabase(database);
     }
 
+    @Override
+    public Database removeDatabase(String databaseName) {
+        return repository.removeDatabase(databaseName);
+    }
+
     public DatabaseTableDTO addTable(String databaseName, Table table){
         Table newTable = repository.addTable(databaseName, table);
         return new DatabaseTableDTO(databaseName, newTable);
+    }
+
+    @Override
+    public Table removeTable(String databaseName, String tableName) {
+        return repository.removeTable(databaseName, tableName);
     }
 }
