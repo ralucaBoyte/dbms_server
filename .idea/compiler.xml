@@ -9,5 +9,6 @@
         <module name="dbms_server" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel target="10" />
   </component>
 </project>
