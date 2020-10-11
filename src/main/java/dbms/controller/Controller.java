@@ -1,6 +1,7 @@
 package dbms.controller;
 
 import dbms.domain.Database;
+import dbms.dto.DatabaseTableDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,5 +19,10 @@ public class Controller {
     public Database addDatabase(@RequestBody Database database) {
         Database newDatabase =service.addDatabase(database);
         return newDatabase;
+    }
+
+    public DatabaseTableDTO addTable(@RequestBody DatabaseTableDTO databaseTableDTO){
+        DatabaseTableDTO newDatabaseTableDTO = service.addTable(databaseTableDTO.getDatabaseName(), databaseTableDTO.getTable());
+        return newDatabaseTableDTO;
     }
 }

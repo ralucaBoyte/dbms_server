@@ -9,12 +9,26 @@ public class Table {
     private List<Pair> foreignKeys;
     private List<Index> indexList;
 
-    public Table(String name, String filename,  List<Attribute> primaryKey, List<Attribute> records) {
+    @Override
+    public String toString() {
+        return "Table{" +
+                "name='" + name + '\'' +
+                ", filename='" + filename + '\'' +
+                ", primaryKeys=" + primaryKeys +
+                ", records=" + records +
+                ", foreignKeys=" + foreignKeys +
+                ", indexList=" + indexList +
+                '}';
+    }
+
+    public Table(String name, String filename, List<Attribute> primaryKeys, List<Attribute> records) {
         this.name = name;
         this.filename = filename;
-        this.primaryKeys = primaryKey;
+        this.primaryKeys = primaryKeys;
         this.records = records;
     }
+
+    public Table(){}
 
     public Table(String name, String filename, List<Attribute> primaryKeys, List<Attribute> records, List<Pair> foreignKeys, List<Index> indexList) {
         this.name = name;
@@ -33,12 +47,12 @@ public class Table {
         this.name = name;
     }
 
-    public List<Attribute> getPrimaryKey() {
+    public List<Attribute> getPrimaryKeys() {
         return primaryKeys;
     }
 
-    public void setPrimaryKey(List<Attribute> primaryKey) {
-        this.primaryKeys = primaryKey;
+    public void setPrimaryKeys(List<Attribute> primaryKeys) {
+        this.primaryKeys = primaryKeys;
     }
 
     public List<Attribute> getRecords() {
@@ -63,5 +77,13 @@ public class Table {
 
     public void setForeignKeys(List<Pair> foreignKeys) {
         this.foreignKeys = foreignKeys;
+    }
+
+    public List<Index> getIndexList() {
+        return indexList;
+    }
+
+    public void setIndexList(List<Index> indexList) {
+        this.indexList = indexList;
     }
 }

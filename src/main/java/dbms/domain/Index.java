@@ -33,4 +33,13 @@ public class Index {
     public void setIsUnique(Integer isUnique) {
         this.isUnique = isUnique;
     }
+
+    @Override
+    public String toString() {
+        return "Index{" +
+                "name='" + name + '\'' +
+                ", filename='" + filename + '\'' +
+                ", isUnique=" + isUnique +
+                '}';
+    }
 }

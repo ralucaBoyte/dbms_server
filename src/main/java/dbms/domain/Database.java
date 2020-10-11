@@ -12,6 +12,9 @@ public class Database {
         this.tables = tables;
     }
 
+    public Database() {
+    }
+
     public String getName() {
         return name;
     }
@@ -26,5 +29,13 @@ public class Database {
 
     public void setTables(List<Table> tables) {
         this.tables = tables;
+    }
+
+    @Override
+    public String toString() {
+        return "Database{" +
+                "name='" + name + '\'' +
+                ", tables=" + tables +
+                '}';
     }
 }

@@ -50,4 +50,14 @@ public class Attribute {
     public void setLength(Integer length) {
         this.length = length;
     }
+
+    @Override
+    public String toString() {
+        return "Attribute{" +
+                "name='" + name + '\'' +
+                ", type=" + type +
+                ", notNull=" + notNull +
+                ", length=" + length +
+                '}';
+    }
 }

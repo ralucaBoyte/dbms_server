@@ -1,11 +1,10 @@
 package dbms.repository;
 
 
-import com.google.gson.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dbms.domain.Database;
 import dbms.domain.Table;
-import org.json.simple.JSONObject;
-
+import dbms.utils.Utils;
 
 
 import java.io.*;
@@ -14,42 +13,36 @@ import java.util.List;
 
 
 public class Repository implements IRepository {
-    private List<Database> databases;
+    private List<Database> databaseList;
     private File file;
+    ObjectMapper objectMapper;
 
     public Repository() {
-        this.databases = new ArrayList<>();
-        JsonParser parser = new JsonParser();
+        this.databaseList = new ArrayList<>();
+        objectMapper = new ObjectMapper();
+        file = new File("Catalog.json");
         try {
-            Object obj = parser.parse(new FileReader("Catalog.json"));
-            System.out.println(obj);
-        } catch (FileNotFoundException e) {
+            databaseList = objectMapper.readValue(file, List.class);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
-
     public Database addDatabase(Database database) {
-        JSONObject newDatabase = new JSONObject();
-        newDatabase.put("databaseName", database.getName());
-        newDatabase.put("tables", new ArrayList<Table>());
-
-        try (FileWriter file = new FileWriter("Catalog.json")) {
-
-            file.write(newDatabase.toJSONString());
-            file.flush();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        databaseList.add(database);
+        Utils.writeToJSONFile(file,objectMapper,databaseList);
+        return database;
     }
 
     public Table addTable(String databaseName, Table table) {
-        return null;
+        databaseList.forEach(database -> {
+            if(database.getName()==databaseName){
+                List<Table> tableList = database.getTables();
+                tableList.add(table);
+            }
+        });
+        Utils.writeToJSONFile(file,objectMapper,databaseList);
+        return table;
     }
 
     public Database removeDatabase(String databaseName) {
