@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 public class Repository implements IRepository {
@@ -70,6 +71,8 @@ public class Repository implements IRepository {
     }
 
     public Table removeTable(String databaseName, String tableName) {
+
+        Table tableToBeRemoved = getTableByDatabaseName(databaseName, tableName);
         databaseList.forEach(database -> {
             if (database.getName().equals(databaseName)){
                 List<Table> newTables = database.getTables();
@@ -79,13 +82,35 @@ public class Repository implements IRepository {
 
         });
         Utils.writeToJSONFile(file,objectMapper,databaseList);
-        return null;
+        return tableToBeRemoved;
+    }
+
+    @Override
+    public Table getTableByDatabaseName(String databaseName, String tableName) {
+        Database database = databaseList.stream().
+                filter(d -> d.getName().equals(databaseName)).
+                findAny().orElse(null);
+        Table table = database.getTables().stream().
+                filter(t->t.getName().equals(tableName)).
+                findAny().orElse(null);
+        return table;
     }
 
 
     @Override
-    public Index addIndex(Index index) {
-
-        return null;
+    public Index addIndex(Index index, String databaseName, String tableName) {
+        databaseList.forEach(database -> {
+            if(database.getName().equals(databaseName)){
+                List<Table> tableList = database.getTables();
+                tableList.forEach(t->{
+                    if (t.getName().equals(tableName)){
+                        List<Index> indexList = t.getIndexList();
+                        indexList.add(index);
+                    }
+                });
+            }
+        });
+        Utils.writeToJSONFile(file,objectMapper,databaseList);
+        return index;
     }
 }

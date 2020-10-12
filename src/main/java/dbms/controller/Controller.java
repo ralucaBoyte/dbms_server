@@ -1,6 +1,7 @@
 package dbms.controller;
 
 import dbms.domain.Database;
+import dbms.domain.Index;
 import dbms.domain.Table;
 import dbms.dto.DatabaseTableDTO;
 import org.json.JSONObject;
@@ -45,4 +46,11 @@ public class Controller {
     public Table addTable(@PathVariable String databaseName, @PathVariable String tableName){
         return service.removeTable(databaseName, tableName);
     }
+
+    @RequestMapping(value = "/index/database/{databaseName}/table/{tableName}", method = RequestMethod.DELETE)
+    public Index addIndex(@RequestBody Index index, @PathVariable String databaseName, @PathVariable String tableName){
+        return service.addIndex(index, databaseName, tableName);
+    }
+
+
 }
