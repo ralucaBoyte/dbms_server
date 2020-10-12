@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import dbms.domain.Database;
+import dbms.domain.Index;
 import dbms.domain.Table;
 import dbms.utils.Utils;
 import org.json.simple.JSONArray;
@@ -13,6 +14,8 @@ import org.json.simple.parser.ParseException;
 
 import java.lang.reflect.Type;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,22 +29,16 @@ public class Repository implements IRepository {
         this.databaseList = new ArrayList<>();
         objectMapper = new ObjectMapper();
         file = new File("Catalog.json");
-        JSONParser parser = new JSONParser();
+
         try {
-            JSONArray databases = (JSONArray) parser.parse(new FileReader("Catalog.json"));
             Gson gson = new Gson();
-            Type type = new TypeToken<List<Database>>(){}.getType();
-            this.databaseList = gson.fromJson(databases.toJSONString(), type);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
+            Reader reader = Files.newBufferedReader(Paths.get("Catalog.json"));
+            databaseList = gson.fromJson(reader, new TypeToken<List<Database>>() {}.getType());
+            reader.close();
+        } catch (Exception e) {
             e.printStackTrace();
         }
-//        try {
-//            databaseList = objectMapper.readValue(file, List.class);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+
     }
 
     public Database addDatabase(Database database) {
@@ -67,6 +64,11 @@ public class Repository implements IRepository {
         return null;
     }
 
+    @Override
+    public List<Database> getAllDatabases() {
+        return this.databaseList;
+    }
+
     public Table removeTable(String databaseName, String tableName) {
         databaseList.forEach(database -> {
             if (database.getName().equals(databaseName)){
@@ -74,8 +76,16 @@ public class Repository implements IRepository {
                 newTables.removeIf(t->t.getName().equals(tableName));
                 database.setTables(newTables);
             }
-            System.out.println(database);
+
         });
+        Utils.writeToJSONFile(file,objectMapper,databaseList);
+        return null;
+    }
+
+
+    @Override
+    public Index addIndex(Index index) {
+
         return null;
     }
 }

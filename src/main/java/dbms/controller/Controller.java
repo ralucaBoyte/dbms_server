@@ -9,6 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import dbms.service.IService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/dbms")
 public class Controller {
@@ -21,10 +23,15 @@ public class Controller {
         return newDatabase;
     }
 
-    @RequestMapping(value = "/databases", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, method = RequestMethod.DELETE)
-    public Database removeDatabase(@RequestParam("databaseName") String databaseName) {
+    @RequestMapping(value = "/databases/{databaseName}", method = RequestMethod.DELETE)
+    public Database removeDatabase(@PathVariable String databaseName) {
         Database newDatabase = service.removeDatabase(databaseName);
         return newDatabase;
+    }
+
+    @RequestMapping(value = "/databases", method = RequestMethod.GET)
+    public List<Database> getAllDatabases() {
+        return service.getAllDatabases();
     }
 
     @RequestMapping(value = "/tables", method = RequestMethod.POST)
@@ -33,8 +40,8 @@ public class Controller {
         return newDatabaseTableDTO;
     }
 
-    @RequestMapping(value = "/tables", method = RequestMethod.DELETE)
-    public Table addTable(@RequestParam("databaseName") String databaseName, @RequestParam("tableName") String tableName){
+    @RequestMapping(value = "/databases/{databaseName}/tables/{tableName}", method = RequestMethod.DELETE)
+    public Table addTable(@PathVariable String databaseName, @PathVariable String tableName){
         return service.removeTable(databaseName, tableName);
     }
 }

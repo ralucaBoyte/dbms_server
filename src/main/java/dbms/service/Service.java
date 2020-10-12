@@ -7,6 +7,8 @@ import dbms.dto.DatabaseTableDTO;
 import dbms.repository.IRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 
 public class Service implements IService{
     @Autowired
@@ -21,6 +23,11 @@ public class Service implements IService{
     @Override
     public Database removeDatabase(String databaseName) {
         return repository.removeDatabase(databaseName);
+    }
+
+    @Override
+    public List<Database> getAllDatabases() {
+        return repository.getAllDatabases();
     }
 
     public DatabaseTableDTO addTable(String databaseName, Table table){
