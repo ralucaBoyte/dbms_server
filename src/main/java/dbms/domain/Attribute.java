@@ -6,6 +6,7 @@ public class Attribute {
     private Integer notNull, length, isUnique, isPrimaryKey;
     private Pair foreignKey;
 
+    public Attribute(){}
 
     public Attribute(String name, Type type, Integer notNull, Integer length) {
         this.name = name;

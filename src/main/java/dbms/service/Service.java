@@ -1,6 +1,7 @@
 package dbms.service;
 
 
+import dbms.domain.Attribute;
 import dbms.domain.Database;
 import dbms.domain.Index;
 import dbms.domain.Table;
@@ -9,6 +10,7 @@ import dbms.repository.IRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class Service implements IService{
@@ -42,7 +44,12 @@ public class Service implements IService{
     }
 
     @Override
-    public Index addIndex(Index index, String databaseName, String tableName) {
-        return repository.addIndex(index, databaseName, tableName);
+    public Index addIndex(List<Attribute> attributeList, String databaseName, String tableName) {
+        String indexName = attributeList.stream()
+                .map(Attribute::getName)
+                .collect(Collectors.joining(""));
+        indexName += "_" + databaseName + "_" + tableName;
+        Index indexToBeAdded = new Index(indexName, attributeList);
+        return repository.addIndex(indexToBeAdded, databaseName, tableName);
     }
 }
