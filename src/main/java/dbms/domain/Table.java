@@ -4,9 +4,7 @@ import java.util.List;
 
 public class Table {
     private String name, filename;
-    private List<Attribute> primaryKeys;
     private List<Attribute> records;
-    private List<Pair> foreignKeys;
     private List<Index> indexList;
 
     @Override
@@ -14,28 +12,23 @@ public class Table {
         return "Table{" +
                 "name='" + name + '\'' +
                 ", filename='" + filename + '\'' +
-                ", primaryKeys=" + primaryKeys +
                 ", records=" + records +
-                ", foreignKeys=" + foreignKeys +
                 ", indexList=" + indexList +
                 '}';
     }
 
-    public Table(String name, String filename, List<Attribute> primaryKeys, List<Attribute> records) {
+    public Table(String name, String filename, List<Attribute> records) {
         this.name = name;
         this.filename = filename;
-        this.primaryKeys = primaryKeys;
         this.records = records;
     }
 
     public Table(){}
 
-    public Table(String name, String filename, List<Attribute> primaryKeys, List<Attribute> records, List<Pair> foreignKeys, List<Index> indexList) {
+    public Table(String name, String filename, List<Attribute> records, List<Index> indexList) {
         this.name = name;
         this.filename = filename;
-        this.primaryKeys = primaryKeys;
         this.records = records;
-        this.foreignKeys = foreignKeys;
         this.indexList = indexList;
     }
 
@@ -45,14 +38,6 @@ public class Table {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<Attribute> getPrimaryKeys() {
-        return primaryKeys;
-    }
-
-    public void setPrimaryKeys(List<Attribute> primaryKeys) {
-        this.primaryKeys = primaryKeys;
     }
 
     public List<Attribute> getRecords() {
@@ -69,14 +54,6 @@ public class Table {
 
     public void setFilename(String filename) {
         this.filename = filename;
-    }
-
-    public List<Pair> getForeignKeys() {
-        return foreignKeys;
-    }
-
-    public void setForeignKeys(List<Pair> foreignKeys) {
-        this.foreignKeys = foreignKeys;
     }
 
     public List<Index> getIndexList() {
