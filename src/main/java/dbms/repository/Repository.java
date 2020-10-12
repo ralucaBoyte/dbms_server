@@ -8,17 +8,12 @@ import dbms.domain.Database;
 import dbms.domain.Index;
 import dbms.domain.Table;
 import dbms.utils.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import java.lang.reflect.Type;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 
 public class Repository implements IRepository {
@@ -95,7 +90,6 @@ public class Repository implements IRepository {
                 findAny().orElse(null);
         return table;
     }
-
 
     @Override
     public Index addIndex(Index index, String databaseName, String tableName) {

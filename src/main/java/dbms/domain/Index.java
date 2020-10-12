@@ -1,5 +1,6 @@
 package dbms.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Index {
@@ -11,6 +12,13 @@ public class Index {
         this.name = name;
         this.filename = filename;
         this.isUnique = isUnique;
+        this.attributeList = attributeList;
+    }
+
+    public Index(String name, List<Attribute> attributeList) {
+        this.name = name;
+        this.filename = "";
+        this.isUnique = 0;
         this.attributeList = attributeList;
     }
 

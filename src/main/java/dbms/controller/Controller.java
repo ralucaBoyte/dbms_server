@@ -1,12 +1,11 @@
 package dbms.controller;
 
+import dbms.domain.Attribute;
 import dbms.domain.Database;
 import dbms.domain.Index;
 import dbms.domain.Table;
 import dbms.dto.DatabaseTableDTO;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import dbms.service.IService;
 
@@ -47,9 +46,9 @@ public class Controller {
         return service.removeTable(databaseName, tableName);
     }
 
-    @RequestMapping(value = "/index/database/{databaseName}/table/{tableName}", method = RequestMethod.DELETE)
-    public Index addIndex(@RequestBody Index index, @PathVariable String databaseName, @PathVariable String tableName){
-        return service.addIndex(index, databaseName, tableName);
+    @RequestMapping(value = "/index/database/{databaseName}/table/{tableName}", method = RequestMethod.POST)
+    public Index addIndex(@RequestBody List<Attribute> attributeList, @PathVariable String databaseName, @PathVariable String tableName){
+        return service.addIndex(attributeList, databaseName, tableName);
     }
 
 
