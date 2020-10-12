@@ -104,6 +104,8 @@ public class Repository implements IRepository {
                 });
             }
         });
+
+        Utils.createFile(index.getName(), databaseName, tableName);
         Utils.writeToJSONFile(file,objectMapper,databaseList);
         return index;
     }
