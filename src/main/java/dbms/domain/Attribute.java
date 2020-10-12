@@ -3,7 +3,8 @@ package dbms.domain;
 public class Attribute {
     private String name;
     private Type type;
-    private Integer notNull, length;
+    private Integer notNull, length, isUnique, isPrimaryKey;
+    private Pair foreignKey;
 
 
     public Attribute(String name, Type type, Integer notNull, Integer length) {
@@ -51,6 +52,30 @@ public class Attribute {
         this.length = length;
     }
 
+    public Integer getIsUnique() {
+        return isUnique;
+    }
+
+    public void setIsUnique(Integer isUnique) {
+        this.isUnique = isUnique;
+    }
+
+    public Integer getIsPrimaryKey() {
+        return isPrimaryKey;
+    }
+
+    public void setIsPrimaryKey(Integer isPrimaryKey) {
+        this.isPrimaryKey = isPrimaryKey;
+    }
+
+    public Pair getForeignKey() {
+        return foreignKey;
+    }
+
+    public void setForeignKey(Pair foreignKey) {
+        this.foreignKey = foreignKey;
+    }
+
     @Override
     public String toString() {
         return "Attribute{" +
@@ -58,6 +83,9 @@ public class Attribute {
                 ", type=" + type +
                 ", notNull=" + notNull +
                 ", length=" + length +
+                ", isUnique=" + isUnique +
+                ", isPrimaryKey=" + isPrimaryKey +
+                ", foreignKey=" + foreignKey +
                 '}';
     }
 }
