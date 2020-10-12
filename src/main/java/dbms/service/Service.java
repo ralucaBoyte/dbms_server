@@ -2,6 +2,7 @@ package dbms.service;
 
 
 import dbms.domain.Database;
+import dbms.domain.Index;
 import dbms.domain.Table;
 import dbms.dto.DatabaseTableDTO;
 import dbms.repository.IRepository;
@@ -38,5 +39,10 @@ public class Service implements IService{
     @Override
     public Table removeTable(String databaseName, String tableName) {
         return repository.removeTable(databaseName, tableName);
+    }
+
+    @Override
+    public Index addIndex(Index index, String databaseName, String tableName) {
+        return repository.addIndex(index, databaseName, tableName);
     }
 }
