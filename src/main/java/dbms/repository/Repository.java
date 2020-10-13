@@ -55,9 +55,10 @@ public class Repository implements IRepository {
     }
 
     public Database removeDatabase(String databaseName) {
+        Database databaseToBeRomoved = databaseList.stream().filter(d->d.getName().equals(databaseName)).findAny().orElse(null);
         databaseList.removeIf(d -> d.getName().equals(databaseName));
         Utils.writeToJSONFile(file,objectMapper,databaseList);
-        return null;
+        return databaseToBeRomoved;
     }
 
     @Override
