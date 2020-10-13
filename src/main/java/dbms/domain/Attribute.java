@@ -19,6 +19,20 @@ public class Attribute {
         this.name = name;
         this.type = type;
         this.notNull = notNull;
+        this.length = 0;
+        this.isUnique = 1;
+        this.isPrimaryKey = 0;
+        this.foreignKey = new Pair("", "");
+    }
+
+    public Attribute(String name, Type type, Integer notNull, Integer length, Integer isUnique, Integer isPrimaryKey, Pair foreignKey) {
+        this.name = name;
+        this.type = type;
+        this.notNull = notNull;
+        this.length = length;
+        this.isUnique = isUnique;
+        this.isPrimaryKey = isPrimaryKey;
+        this.foreignKey = foreignKey;
     }
 
     public String getName() {
