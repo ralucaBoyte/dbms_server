@@ -1,0 +1,1 @@
+[{"name":"d1","tables":[{"name":"Tabel random3","filename":"hddhdh","records":[],"indexList":[]},{"name":"t5","filename":"t5","records":[{"name":"r1","type":"INTEGER","notNull":1,"length":23,"isUnique":0,"isPrimaryKey":1,"foreignKey":null}],"indexList":[]}]},{"name":"d2","tables":[]}]

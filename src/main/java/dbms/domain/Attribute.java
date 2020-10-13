@@ -2,20 +2,20 @@ package dbms.domain;
 
 public class Attribute {
     private String name;
-    private Type type;
+    private String type;
     private Integer notNull, length, isUnique, isPrimaryKey;
     private Pair foreignKey;
 
     public Attribute(){}
 
-    public Attribute(String name, Type type, Integer notNull, Integer length) {
+    public Attribute(String name, String type, Integer notNull, Integer length) {
         this.name = name;
         this.type = type;
         this.notNull = notNull;
         this.length = length;
     }
 
-    public Attribute(String name, Type type, Integer notNull) {
+    public Attribute(String name, String type, Integer notNull) {
         this.name = name;
         this.type = type;
         this.notNull = notNull;
@@ -25,9 +25,9 @@ public class Attribute {
         this.foreignKey = new Pair("", "");
     }
 
-    public Attribute(String name, Type type, Integer notNull, Integer length, Integer isUnique, Integer isPrimaryKey, Pair foreignKey) {
+    public Attribute(String name, String type, Integer notNull, Integer length, Integer isUnique, Integer isPrimaryKey, Pair foreignKey) {
         this.name = name;
-        this.type = type;
+        this.type= type;
         this.notNull = notNull;
         this.length = length;
         this.isUnique = isUnique;
@@ -43,11 +43,11 @@ public class Attribute {
         this.name = name;
     }
 
-    public Type getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(String type) {
         this.type = type;
     }
 
