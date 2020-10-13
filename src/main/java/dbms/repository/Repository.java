@@ -30,6 +30,9 @@ public class Repository implements IRepository {
             Gson gson = new Gson();
             Reader reader = Files.newBufferedReader(Paths.get("Catalog.json"));
             databaseList = gson.fromJson(reader, new TypeToken<List<Database>>() {}.getType());
+            if(databaseList == null){
+                this.databaseList = new ArrayList<>();
+            }
             reader.close();
         } catch (Exception e) {
             e.printStackTrace();
