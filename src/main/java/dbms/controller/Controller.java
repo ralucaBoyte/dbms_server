@@ -42,8 +42,9 @@ public class Controller {
     }
 
     @RequestMapping(value = "/databases/{databaseName}/tables/{tableName}", method = RequestMethod.DELETE)
-    public Table addTable(@PathVariable String databaseName, @PathVariable String tableName){
-        return service.removeTable(databaseName, tableName);
+    public DatabaseTableDTO removeTable(@PathVariable String databaseName, @PathVariable String tableName){
+        Table table = service.removeTable(databaseName, tableName);
+        return new DatabaseTableDTO(databaseName, table);
     }
 
     @RequestMapping(value = "/index/database/{databaseName}/table/{tableName}", method = RequestMethod.POST)
