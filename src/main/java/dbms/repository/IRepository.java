@@ -12,5 +12,6 @@ public interface IRepository {
     List<Database> getAllDatabases();
     Table addTable(String databaseName, Table table);
     Table removeTable(String databaseName, String tableName);
-    Index addIndex(Index index);
+    Table getTableByDatabaseName(String databaseName,String tableName);
+    Index addIndex(Index index, String databaseName, String tableName);
 }

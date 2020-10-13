@@ -8,11 +8,7 @@ import dbms.domain.Database;
 import dbms.domain.Index;
 import dbms.domain.Table;
 import dbms.utils.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import java.lang.reflect.Type;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -59,9 +55,10 @@ public class Repository implements IRepository {
     }
 
     public Database removeDatabase(String databaseName) {
+        Database databaseToBeRomoved = databaseList.stream().filter(d->d.getName().equals(databaseName)).findAny().orElse(null);
         databaseList.removeIf(d -> d.getName().equals(databaseName));
         Utils.writeToJSONFile(file,objectMapper,databaseList);
-        return null;
+        return databaseToBeRomoved;
     }
 
     @Override
@@ -70,6 +67,8 @@ public class Repository implements IRepository {
     }
 
     public Table removeTable(String databaseName, String tableName) {
+
+        Table tableToBeRemoved = getTableByDatabaseName(databaseName, tableName);
         databaseList.forEach(database -> {
             if (database.getName().equals(databaseName)){
                 List<Table> newTables = database.getTables();
@@ -79,13 +78,36 @@ public class Repository implements IRepository {
 
         });
         Utils.writeToJSONFile(file,objectMapper,databaseList);
-        return null;
+        return tableToBeRemoved;
     }
 
+    @Override
+    public Table getTableByDatabaseName(String databaseName, String tableName) {
+        Database database = databaseList.stream().
+                filter(d -> d.getName().equals(databaseName)).
+                findAny().orElse(null);
+        Table table = database.getTables().stream().
+                filter(t->t.getName().equals(tableName)).
+                findAny().orElse(null);
+        return table;
+    }
 
     @Override
-    public Index addIndex(Index index) {
+    public Index addIndex(Index index, String databaseName, String tableName) {
+        databaseList.forEach(database -> {
+            if(database.getName().equals(databaseName)){
+                List<Table> tableList = database.getTables();
+                tableList.forEach(t->{
+                    if (t.getName().equals(tableName)){
+                        List<Index> indexList = t.getIndexList();
+                        indexList.add(index);
+                    }
+                });
+            }
+        });
 
-        return null;
+        Utils.createFile(index.getName(), databaseName, tableName);
+        Utils.writeToJSONFile(file,objectMapper,databaseList);
+        return index;
     }
 }
