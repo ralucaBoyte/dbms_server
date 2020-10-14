@@ -1,24 +1,18 @@
 package dbms.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonParser;
 import dbms.domain.Database;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.text.ParseException;
 import java.util.List;
-import java.util.Objects;
 
 public class Utils {
 
+    public static String DB_PATH = "src/main/resources/";
     public static void writeToJSONFile(File file, ObjectMapper objectMapper, List<Database> databaseList){
         try {
             objectMapper.writeValue(file, databaseList);
@@ -27,38 +21,18 @@ public class Utils {
         }
     }
 
-    private static String createFolderLocation(String databaseName, String tableName) {
 
-        return "src/main/resources/" + databaseName + "_" + tableName;
+
+    public static String createIndexFilename(String filename) {
+        return filename + ".ind";
     }
 
-    private static String createFileLocation(String folderName, String filename) {
-
-        return folderName + "/" + filename + ".ind";
+    public static String createTableFilename(String filename) {
+        return filename + ".kv";
     }
 
-    public static void createFile(String filename, String databaseName, String tableName) {
 
-        String folderUploadLocation = createFolderLocation(databaseName, tableName);
-        String fileUploadLocation = createFileLocation(folderUploadLocation, filename);
-
-        Path newUploadLocation = Paths.get(folderUploadLocation);
-        createDirectories(newUploadLocation);
-
-        File f1 = new File(fileUploadLocation);
-        try {
-            f1.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-    public static void createFile(String filename, String path) {
-
-        Path newUploadLocation = Paths.get(path);
-        String fileUploadLocation = createFileLocation(path, filename);
+    public static void createFile(String fileUploadLocation) {
 
         File f1 = new File(fileUploadLocation);
         try {
@@ -79,6 +53,40 @@ public class Utils {
                 System.out.println("++++++++create directories failed++++++++");
             }
         }
+    }
+
+    public static void createTablesPath(String databaseName, String tableName){
+        String directoryName = DB_PATH + databaseName;
+        Path directoryPath = Paths.get(directoryName);
+        Utils.createDirectories(directoryPath);
+
+
+        String tablesPath = directoryName + "/tables";
+        Path tablePath = Paths.get(tablesPath);
+        Utils.createDirectories(tablePath);
+
+
+        String tableNamePath = tablesPath + "/" + tableName;
+        createFile(createTableFilename(tableNamePath));
+    }
+
+    public static void createIndexPath(String indexName, String databaseName, String tableName){
+        String directoryName = DB_PATH + databaseName;
+        Path directoryPath = Paths.get(directoryName);
+        Utils.createDirectories(directoryPath);
+
+        String tableNamePath = directoryName + "/" + tableName;
+        Path tablePath = Paths.get(tableNamePath);
+        Utils.createDirectories(tablePath);
+
+
+        String indexNamePath = tableNamePath + "/indexes";
+        Path indexPath = Paths.get(indexNamePath);
+        Utils.createDirectories(indexPath);
+
+
+        String index_name = indexNamePath + "/" + indexName + "_" + databaseName + "_" + tableName;
+        createFile(createIndexFilename(index_name));
     }
 
 }

@@ -54,6 +54,8 @@ public class Repository implements IRepository {
                 tableList.add(table);
             }
         });
+
+        Utils.createTablesPath(databaseName, table.getName());
         Utils.writeToJSONFile(file,objectMapper,databaseList);
         return table;
     }
@@ -110,16 +112,7 @@ public class Repository implements IRepository {
             }
         });
 
-        String directoryName = "src/main/resources/" + databaseName;
-        Path directoryPath = Paths.get(directoryName);
-
-        Utils.createDirectories(directoryPath);
-
-        String tableNamePath = directoryName + "/" + tableName;
-        Path tablePath = Paths.get(tableNamePath);
-        Utils.createDirectories(tablePath);
-
-        Utils.createFile(index.getName(), tableNamePath);
+        Utils.createIndexPath(index.getName(), databaseName, tableName);
         Utils.writeToJSONFile(file,objectMapper,databaseList);
         return index;
     }
