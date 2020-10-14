@@ -11,6 +11,7 @@ import dbms.utils.Utils;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +110,16 @@ public class Repository implements IRepository {
             }
         });
 
-        Utils.createFile(index.getName(), databaseName, tableName);
+        String directoryName = "src/main/resources/" + databaseName;
+        Path directoryPath = Paths.get(directoryName);
+
+        Utils.createDirectories(directoryPath);
+
+        String tableNamePath = directoryName + "/" + tableName;
+        Path tablePath = Paths.get(tableNamePath);
+        Utils.createDirectories(tablePath);
+
+        Utils.createFile(index.getName(), tableNamePath);
         Utils.writeToJSONFile(file,objectMapper,databaseList);
         return index;
     }

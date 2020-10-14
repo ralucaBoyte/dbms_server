@@ -55,7 +55,22 @@ public class Utils {
 
     }
 
-    private static void createDirectories(Path uploadLocation) {
+    public static void createFile(String filename, String path) {
+
+        Path newUploadLocation = Paths.get(path);
+        String fileUploadLocation = createFileLocation(path, filename);
+
+        File f1 = new File(fileUploadLocation);
+        try {
+            f1.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public static void createDirectories(Path uploadLocation) {
 
         if (!Files.exists(uploadLocation)) {
             try {
