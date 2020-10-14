@@ -14,5 +14,5 @@ public interface IService {
     List<Database> getAllDatabases();
     DatabaseTableDTO addTable(String databaseName, Table table);
     Table removeTable(String databaseName, String tableName);
-    Index addIndex(List<Attribute> indexDTOList, String databaseName, String tableName);
+    Index addIndex(Index index, String databaseName, String tableName);
 }

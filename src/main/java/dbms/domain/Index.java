@@ -15,6 +15,14 @@ public class Index {
         this.attributeList = attributeList;
     }
 
+    public Index(String name, Integer isUnique, List<Attribute> attributeList) {
+        this.name = name;
+        this.isUnique = isUnique;
+        this.attributeList = attributeList;
+    }
+
+    public Index(){}
+
     public Index(String name, List<Attribute> attributeList) {
         this.name = name;
         this.filename = "";
