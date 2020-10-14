@@ -5,6 +5,8 @@ public class Pair {
     private Object value;
 
 
+    public Pair(){}
+
     public Pair(Object key, Object value) {
         this.key = key;
         this.value = value;
