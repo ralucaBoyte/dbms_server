@@ -44,12 +44,12 @@ public class Service implements IService{
     }
 
     @Override
-    public Index addIndex(List<Attribute> attributeList, String databaseName, String tableName) {
-        String indexName = attributeList.stream()
+    public Index addIndex(Index index, String databaseName, String tableName) {
+        String fileName = index.getAttributeList().stream()
                 .map(Attribute::getName)
                 .collect(Collectors.joining(""));
-        indexName += "_" + databaseName + "_" + tableName;
-        Index indexToBeAdded = new Index(indexName, attributeList);
-        return repository.addIndex(indexToBeAdded, databaseName, tableName);
+        fileName += "_" + databaseName + "_" + tableName;
+        index.setFilename(fileName);
+        return repository.addIndex(index, databaseName, tableName);
     }
 }

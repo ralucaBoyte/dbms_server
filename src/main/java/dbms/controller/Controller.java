@@ -5,6 +5,7 @@ import dbms.domain.Database;
 import dbms.domain.Index;
 import dbms.domain.Table;
 import dbms.dto.DatabaseTableDTO;
+import dbms.dto.DatabaseTableIndexDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,8 +58,9 @@ public class Controller {
     }
 
     @RequestMapping(value = "/index/database/{databaseName}/table/{tableName}", method = RequestMethod.POST)
-    public Index addIndex(@RequestBody List<Attribute> attributeList, @PathVariable String databaseName, @PathVariable String tableName){
-        return service.addIndex(attributeList, databaseName, tableName);
+    public DatabaseTableIndexDTO addIndex(@RequestBody Index index, @PathVariable String databaseName, @PathVariable String tableName){
+        Index savedIndex = service.addIndex(index, databaseName, tableName);
+        return new DatabaseTableIndexDTO(databaseName, tableName, savedIndex);
     }
 
 
