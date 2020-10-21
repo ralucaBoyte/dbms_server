@@ -1,15 +1,13 @@
 package dbms.service;
 
 
-import dbms.domain.Attribute;
-import dbms.domain.Database;
-import dbms.domain.Index;
-import dbms.domain.Table;
+import dbms.domain.*;
 import dbms.dto.DatabaseTableDTO;
 import dbms.repository.IRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -51,5 +49,25 @@ public class Service implements IService{
         fileName += "_" + databaseName + "_" + tableName;
         index.setFilename(fileName);
         return repository.addIndex(index, databaseName, tableName);
+    }
+
+    @Override
+    public void addRecord(Record record, String databaseTableNames) {
+        repository.addRecord(record, databaseTableNames);
+    }
+
+    @Override
+    public Map<String, String> findAllRecords(String databaseTableNames) {
+        return repository.findAllRecords(databaseTableNames);
+    }
+
+    @Override
+    public String findRecordById(String id, String databaseTableNames) {
+        return repository.findRecordById(id, databaseTableNames);
+    }
+
+    @Override
+    public void deleteRecord(String id, String databaseTableNames) {
+        repository.deleteRecord(id, databaseTableNames);
     }
 }

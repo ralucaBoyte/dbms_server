@@ -6,27 +6,34 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import dbms.domain.Database;
 import dbms.domain.Index;
+import dbms.domain.Record;
 import dbms.domain.Table;
 import dbms.utils.Utils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public class Repository implements IRepository {
     private List<Database> databaseList;
     private File file;
+    private HashOperations hashOperations;
     ObjectMapper objectMapper;
+    private RedisTemplate<String, Object> redisTemplate;
 
-    public Repository() {
+    public Repository(RedisTemplate<String, Object> redisTemplate) {
         this.databaseList = new ArrayList<>();
+        this.redisTemplate = redisTemplate;
         objectMapper = new ObjectMapper();
         file = new File("Catalog.json");
-
+        hashOperations = this.redisTemplate.opsForHash();
         try {
             Gson gson = new Gson();
             Reader reader = Files.newBufferedReader(Paths.get("Catalog.json"));
@@ -115,5 +122,26 @@ public class Repository implements IRepository {
         Utils.createIndexPath(index.getName(), databaseName, tableName);
         Utils.writeToJSONFile(file,objectMapper,databaseList);
         return index;
+    }
+
+    @Override
+    public void addRecord(Record record, String databaseTableNames) {
+        hashOperations.put(databaseTableNames, record.getKey(), record.getValue());
+    }
+
+    @Override
+    public Map<String, String> findAllRecords(String databaseTableNames) {
+        return hashOperations.entries(databaseTableNames);
+    }
+
+    @Override
+    public String findRecordById(String id, String databaseTableNames) {
+        return (String)hashOperations.get(databaseTableNames, id);
+    }
+
+    @Override
+    public void deleteRecord(String id, String databaseTableName) {
+
+        hashOperations.delete(databaseTableName, id);
     }
 }
