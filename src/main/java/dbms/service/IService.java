@@ -15,7 +15,7 @@ public interface IService {
     Index addIndex(Index index, String databaseName, String tableName);
 
     void addRecord(Record record, String databaseTableNames);
-    Map<String, String> findAllRecords(String databaseTableNames);
-    String findRecordById(String id, String databaseTableNames);
-    void deleteRecord(String id, String databaseTableNames);
+    List<Record> findAllRecords(String databaseTableNames);
+    Record findRecordById(String id, String databaseTableNames);
+    Record deleteRecord(String id, String databaseTableNames);
 }

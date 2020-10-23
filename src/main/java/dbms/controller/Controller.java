@@ -62,20 +62,19 @@ public class Controller {
     }
 
     @RequestMapping(value = "/records/{databaseTableNames}", method = RequestMethod.POST)
-    public String addRecord(@RequestBody Record record, @PathVariable("databaseTableNames") final String databaseTableNames){
+    public Record addRecord(@RequestBody Record record, @PathVariable("databaseTableNames") final String databaseTableNames){
         service.addRecord(record, databaseTableNames);
         return service.findRecordById(record.getKey(), databaseTableNames);
     }
 
     @RequestMapping(value = "/records/{databaseTableNames}", method = RequestMethod.GET)
-    public Map<String, String> getAllRecords(@PathVariable("databaseTableNames") final String databaseTableNames){
+    public List<Record> getAllRecords(@PathVariable("databaseTableNames") final String databaseTableNames){
         return service.findAllRecords(databaseTableNames);
     }
 
     @RequestMapping("/records/{databaseTableNames}/{id}")
-    public Map<String, String> delete(@PathVariable("databaseTableNames") final String databaseTableNames, @PathVariable("id") final String id) {
-        service.deleteRecord(id, databaseTableNames);
-        return service.findAllRecords(databaseTableNames);
+    public Record delete(@PathVariable("databaseTableNames") final String databaseTableNames, @PathVariable("id") final String id) {
+        return service.deleteRecord(id, databaseTableNames);
     }
 
 

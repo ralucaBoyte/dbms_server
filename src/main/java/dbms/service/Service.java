@@ -6,6 +6,7 @@ import dbms.dto.DatabaseTableDTO;
 import dbms.repository.IRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -57,17 +58,26 @@ public class Service implements IService{
     }
 
     @Override
-    public Map<String, String> findAllRecords(String databaseTableNames) {
-        return repository.findAllRecords(databaseTableNames);
+    public List<Record> findAllRecords(String databaseTableNames) {
+        Map<String, String> records = repository.findAllRecords(databaseTableNames);
+        List<Record> recordList = new ArrayList<>();
+        for (Map.Entry<String,String> record : records.entrySet()){
+            recordList.add(new Record(record.getKey(), record.getValue()));
+        }
+
+        return recordList;
     }
 
     @Override
-    public String findRecordById(String id, String databaseTableNames) {
-        return repository.findRecordById(id, databaseTableNames);
+    public Record findRecordById(String id, String databaseTableNames) {
+        String recordValue = repository.findRecordById(id, databaseTableNames);
+        return new Record(id, recordValue);
     }
 
     @Override
-    public void deleteRecord(String id, String databaseTableNames) {
+    public Record deleteRecord(String id, String databaseTableNames) {
+        Record recordToBeDeleted = new Record(id, repository.findRecordById(id, databaseTableNames));
         repository.deleteRecord(id, databaseTableNames);
+        return recordToBeDeleted;
     }
 }
