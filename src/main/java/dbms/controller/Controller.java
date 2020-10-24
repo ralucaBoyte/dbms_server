@@ -72,7 +72,7 @@ public class Controller {
         return service.findAllRecords(databaseTableNames);
     }
 
-    @RequestMapping("/records/{databaseTableNames}/{id}")
+    @RequestMapping(value = "/records/{databaseTableNames}/{id}", method = RequestMethod.DELETE)
     public Record delete(@PathVariable("databaseTableNames") final String databaseTableNames, @PathVariable("id") final String id) {
         return service.deleteRecord(id, databaseTableNames);
     }

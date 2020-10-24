@@ -78,6 +78,31 @@
           }
         ],
         "indexList": []
+      },
+      {
+        "name": "Test",
+        "filename": "Test",
+        "records": [
+          {
+            "name": "pk",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 1,
+            "foreignKey": null
+          },
+          {
+            "name": "testUnique",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 1,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          }
+        ],
+        "indexList": []
       }
     ]
   }

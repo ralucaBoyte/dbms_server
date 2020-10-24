@@ -54,6 +54,7 @@ public class Service implements IService{
 
     @Override
     public void addRecord(Record record, String databaseTableNames) {
+
         repository.addRecord(record, databaseTableNames);
     }
 
