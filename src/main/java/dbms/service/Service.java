@@ -62,13 +62,14 @@ public class Service implements IService{
         RecordMessageDTO recordMessageDTO = new RecordMessageDTO();
 
         String fk = "";
+        boolean existsForeignKeyAttribute = false;
+
         List<Attribute> attributeList = repository.findAllAttributesForDB_Table(databaseName, tableName);
         for(int i = 0; i < attributeList.size(); i++){
             if(attributeList.get(i).getForeignKey() != null){
+                existsForeignKeyAttribute = true;
                 String tableNameFK = attributeList.get(i).getForeignKey().getKey().toString();
-
                 List<Record> recordsForeignKey = findAllRecords(databaseName + "_" + tableNameFK);
-
                 fk = record.getValue().split(";")[i-1];
 
                 for(int j = 0 ; j < recordsForeignKey.size(); j++){
@@ -82,8 +83,18 @@ public class Service implements IService{
             }
         }
 
-        recordMessageDTO.setMessage("FK " + fk + " doesn't exist!");
-        return recordMessageDTO;
+        if(existsForeignKeyAttribute){
+            recordMessageDTO.setMessage("FK " + fk + " doesn't not refer to an existing element!");
+            return recordMessageDTO;
+        }
+        else {
+            recordMessageDTO.setRecord(record);
+            repository.addRecord(record, databaseTableNames);
+            return recordMessageDTO;
+        }
+
+
+
     }
 
     @Override
