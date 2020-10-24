@@ -3,6 +3,7 @@ package dbms.service;
 
 import dbms.domain.*;
 import dbms.dto.DatabaseTableDTO;
+import dbms.dto.RecordMessageDTO;
 import dbms.repository.IRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -53,9 +54,36 @@ public class Service implements IService{
     }
 
     @Override
-    public void addRecord(Record record, String databaseTableNames) {
+    public RecordMessageDTO addRecord(Record record, String databaseTableNames) {
+        String[] parts = databaseTableNames.split("_");
+        String databaseName = parts[0];
+        String tableName = parts[1];
 
-        repository.addRecord(record, databaseTableNames);
+        RecordMessageDTO recordMessageDTO = new RecordMessageDTO();
+
+        String fk = "";
+        List<Attribute> attributeList = repository.findAllAttributesForDB_Table(databaseName, tableName);
+        for(int i = 0; i < attributeList.size(); i++){
+            if(attributeList.get(i).getForeignKey() != null){
+                String tableNameFK = attributeList.get(i).getForeignKey().getKey().toString();
+
+                List<Record> recordsForeignKey = findAllRecords(databaseName + "_" + tableNameFK);
+
+                fk = record.getValue().split(";")[i-1];
+
+                for(int j = 0 ; j < recordsForeignKey.size(); j++){
+                    if(recordsForeignKey.get(j).getKey().equals(fk)){
+                        repository.addRecord(record, databaseTableNames);
+                        recordMessageDTO.setRecord(record);
+                        return recordMessageDTO;
+                    }
+                }
+
+            }
+        }
+
+        recordMessageDTO.setMessage("FK " + fk + " doesn't exist!");
+        return recordMessageDTO;
     }
 
     @Override

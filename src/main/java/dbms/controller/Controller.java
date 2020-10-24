@@ -3,6 +3,7 @@ package dbms.controller;
 import dbms.domain.*;
 import dbms.dto.DatabaseTableDTO;
 import dbms.dto.DatabaseTableIndexDTO;
+import dbms.dto.RecordMessageDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,9 +63,8 @@ public class Controller {
     }
 
     @RequestMapping(value = "/records/{databaseTableNames}", method = RequestMethod.POST)
-    public Record addRecord(@RequestBody Record record, @PathVariable("databaseTableNames") final String databaseTableNames){
-        service.addRecord(record, databaseTableNames);
-        return service.findRecordById(record.getKey(), databaseTableNames);
+    public RecordMessageDTO addRecord(@RequestBody Record record, @PathVariable("databaseTableNames") final String databaseTableNames){
+        return service.addRecord(record, databaseTableNames);
     }
 
     @RequestMapping(value = "/records/{databaseTableNames}", method = RequestMethod.GET)

@@ -2,6 +2,7 @@ package dbms.service;
 
 import dbms.domain.*;
 import dbms.dto.DatabaseTableDTO;
+import dbms.dto.RecordMessageDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,7 @@ public interface IService {
     Table removeTable(String databaseName, String tableName);
     Index addIndex(Index index, String databaseName, String tableName);
 
-    void addRecord(Record record, String databaseTableNames);
+    RecordMessageDTO addRecord(Record record, String databaseTableNames);
     List<Record> findAllRecords(String databaseTableNames);
     Record findRecordById(String id, String databaseTableNames);
     Record deleteRecord(String id, String databaseTableNames);

@@ -4,10 +4,7 @@ package dbms.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import dbms.domain.Database;
-import dbms.domain.Index;
-import dbms.domain.Record;
-import dbms.domain.Table;
+import dbms.domain.*;
 import dbms.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
@@ -122,6 +119,25 @@ public class Repository implements IRepository {
         Utils.createIndexPath(index.getName(), databaseName, tableName);
         Utils.writeToJSONFile(file,objectMapper,databaseList);
         return index;
+    }
+
+    @Override
+    public List<Attribute> findAllAttributesForDB_Table(String databaseName, String tableName) {
+
+
+        List<Attribute> attributeList = new ArrayList<>();
+        for(int i = 0; i < databaseList.size(); i++){
+            if(databaseList.get(i).getName().equals(databaseName)){
+                List<Table> tableList = databaseList.get(i).getTables();
+                for(int j = 0; j < tableList.size(); j++){
+                    if(tableList.get(j).getName().equals(tableName)){
+                        attributeList = tableList.get(j).getRecords();
+                    }
+                }
+            }
+        }
+        return attributeList;
+
     }
 
     @Override
