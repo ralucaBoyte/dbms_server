@@ -15,10 +15,12 @@ public interface IRepository {
     Index addIndex(Index index, String databaseName, String tableName);
     List<Attribute> findAllAttributesForDB_Table(String databaseName, String tableName);
 
+    List<Table> getAllTables(String database);
 
     void addRecord(Record record, String databaseTableNames);
     Map<String, String> findAllRecords(String databaseTableNames);
     String findRecordById(String id, String databaseTableNames);
     void deleteRecord(String id, String databaseTableNames);
+    List<Pair> hasForeignKey(Table tableName);
 
 }

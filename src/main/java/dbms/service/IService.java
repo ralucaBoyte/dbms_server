@@ -18,5 +18,5 @@ public interface IService {
     RecordMessageDTO addRecord(Record record, String databaseTableNames);
     List<Record> findAllRecords(String databaseTableNames);
     Record findRecordById(String id, String databaseTableNames);
-    Record deleteRecord(String id, String databaseTableNames);
+    RecordMessageDTO deleteRecord(String id, String databaseTableNames);
 }

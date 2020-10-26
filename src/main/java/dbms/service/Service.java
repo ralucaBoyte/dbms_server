@@ -121,9 +121,40 @@ public class Service implements IService{
     }
 
     @Override
-    public Record deleteRecord(String id, String databaseTableNames) {
+    public RecordMessageDTO deleteRecord(String id, String databaseTableNames) {
+
+        String[] parts = databaseTableNames.split("_");
+        String databaseName = parts[0];
+        String tableName = parts[1];
+
         Record recordToBeDeleted = new Record(id, repository.findRecordById(id, databaseTableNames));
+        RecordMessageDTO recordToBeDeletedDTO = new RecordMessageDTO();
+
+        //GET ALL TABLES FROM DATABASE databaseName, EXCEPT tableName
+        List<Table> tableList = repository.getAllTables(databaseName).stream().filter(t->!t.getName().equals(tableName)).collect(Collectors.toList());
+
+        //ITERATE THROUGH TABLES TO SEE IF EXISTS ONE TABLE WITH A FK REFERENCING tableName TABLE
+        for(Table table: tableList){
+
+            //GET ALL FOREIGN KEYS FOR CURRENT TABLE AND CHECK IF EXISTS ONE WHICH REFERS TO tableName TABLE
+            List<Attribute> attributeList = repository.findAllAttributesForDB_Table(databaseName, table.getName());
+            for(int i = 0; i < attributeList.size(); i ++){
+                if(attributeList.get(i).getForeignKey() != null && attributeList.get(i).getForeignKey().getKey().toString().equals(tableName)){
+                    Map<String, String> recordsList = repository.findAllRecords(databaseName + "_" + table.getName());
+
+                    for(Map.Entry<String, String> value: recordsList.entrySet()){
+                        String []columns = value.getValue().split(";");
+                        if(columns[i-1].equals(recordToBeDeleted.getKey())){
+                            recordToBeDeletedDTO.setMessage("FK constraint violated!");
+                            return recordToBeDeletedDTO;
+                        }
+                    }
+                }
+            }
+        }
+
         repository.deleteRecord(id, databaseTableNames);
-        return recordToBeDeleted;
+        recordToBeDeletedDTO.setRecord(recordToBeDeleted);
+        return recordToBeDeletedDTO;
     }
 }

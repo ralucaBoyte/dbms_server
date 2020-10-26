@@ -141,6 +141,17 @@ public class Repository implements IRepository {
     }
 
     @Override
+    public List<Table> getAllTables(String database) {
+
+        for (Database db: databaseList){
+            if(db.getName().equals(database)){
+                return db.getTables();
+            }
+        }
+        return null;
+    }
+
+    @Override
     public void addRecord(Record record, String databaseTableNames) {
         hashOperations.put(databaseTableNames, record.getKey(), record.getValue());
     }
@@ -160,4 +171,16 @@ public class Repository implements IRepository {
 
         hashOperations.delete(databaseTableName, id);
     }
+
+    @Override
+    public List<Pair> hasForeignKey(Table table) {
+        List<Pair> foreign_keys = new ArrayList<>();
+        for (Attribute attribute: table.getRecords()){
+            if (attribute.getForeignKey()!= null){
+                foreign_keys.add(attribute.getForeignKey());
+            }
+        }
+        return foreign_keys;
+    }
+
 }
