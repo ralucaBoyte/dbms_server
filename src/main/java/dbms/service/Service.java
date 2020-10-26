@@ -72,8 +72,8 @@ public class Service implements IService{
                 List<Record> recordsForeignKey = findAllRecords(databaseName + "_" + tableNameFK);
                 fk = record.getValue().split(";")[i-1];
 
-                for(int j = 0 ; j < recordsForeignKey.size(); j++){
-                    if(recordsForeignKey.get(j).getKey().equals(fk)){
+                for (Record value : recordsForeignKey) {
+                    if (value.getKey().equals(fk)) {
                         repository.addRecord(record, databaseTableNames);
                         recordMessageDTO.setRecord(record);
                         return recordMessageDTO;
@@ -90,11 +90,9 @@ public class Service implements IService{
         else {
             //Check if primary key is unique
             Map<String, String> primaryKeys = repository.findAllRecords(databaseTableNames);
-            for(Map.Entry<String, String> entry: primaryKeys.entrySet()){
-                if(entry.getKey().equals(record.getKey())){
-                    recordMessageDTO.setMessage("Primary key must be unique");
-                    return recordMessageDTO;
-                }
+            if(primaryKeys.containsKey(record.getKey())){
+                recordMessageDTO.setMessage("Primary key must be unique");
+                return recordMessageDTO;
             }
             recordMessageDTO.setRecord(record);
             repository.addRecord(record, databaseTableNames);
