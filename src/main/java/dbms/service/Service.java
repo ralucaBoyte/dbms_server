@@ -88,6 +88,14 @@ public class Service implements IService{
             return recordMessageDTO;
         }
         else {
+            //Check if primary key is unique
+            Map<String, String> primaryKeys = repository.findAllRecords(databaseTableNames);
+            for(Map.Entry<String, String> entry: primaryKeys.entrySet()){
+                if(entry.getKey().equals(record.getKey())){
+                    recordMessageDTO.setMessage("Primary key must be unique");
+                    return recordMessageDTO;
+                }
+            }
             recordMessageDTO.setRecord(record);
             repository.addRecord(record, databaseTableNames);
             return recordMessageDTO;
