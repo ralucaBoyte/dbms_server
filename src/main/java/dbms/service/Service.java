@@ -54,6 +54,34 @@ public class Service implements IService{
     }
 
     @Override
+    public boolean checkFKContraint(List<Attribute> attributeList, Record record, String databaseName) {
+
+        boolean existsForeignKeyAttribute = true;
+        String fk = "";
+
+        for(int i = 0; i < attributeList.size(); i++){
+            boolean existingFK = false;
+            if(attributeList.get(i).getForeignKey() != null){
+
+                String tableNameFK = attributeList.get(i).getForeignKey().getKey().toString();
+                List<Record> recordsForeignKey = findAllRecords(databaseName + "_" + tableNameFK);
+                fk = record.getValue().split(";")[i-1];
+
+                for (Record value : recordsForeignKey) {
+                    if (value.getKey().equals(fk)) {
+                        existingFK = true;
+                        break;
+                    }
+                }
+
+                existsForeignKeyAttribute = existsForeignKeyAttribute & existingFK;
+            }
+        }
+        return existsForeignKeyAttribute;
+    }
+
+
+    @Override
     public RecordMessageDTO addRecord(Record record, String databaseTableNames) {
         String[] parts = databaseTableNames.split("_");
         String databaseName = parts[0];
@@ -62,45 +90,38 @@ public class Service implements IService{
         RecordMessageDTO recordMessageDTO = new RecordMessageDTO();
 
         String fk = "";
-        boolean existsForeignKeyAttribute = false;
-
         List<Attribute> attributeList = repository.findAllAttributesForDB_Table(databaseName, tableName);
-        for(int i = 0; i < attributeList.size(); i++){
-            if(attributeList.get(i).getForeignKey() != null){
-                existsForeignKeyAttribute = true;
-                String tableNameFK = attributeList.get(i).getForeignKey().getKey().toString();
-                List<Record> recordsForeignKey = findAllRecords(databaseName + "_" + tableNameFK);
-                fk = record.getValue().split(";")[i-1];
 
-                for (Record value : recordsForeignKey) {
-                    if (value.getKey().equals(fk)) {
-                        repository.addRecord(record, databaseTableNames);
-                        recordMessageDTO.setRecord(record);
-                        return recordMessageDTO;
-                    }
-                }
+        boolean existsForeignKeyAttributes = attributeList.stream().anyMatch(attribute -> attribute.getForeignKey() != null);
 
-            }
-        }
-
-        if(existsForeignKeyAttribute){
-            recordMessageDTO.setMessage("FK " + fk + " doesn't not refer to an existing element!");
+        //Check if primary key is unique
+        Map<String, String> primaryKeys = repository.findAllRecords(databaseTableNames);
+        if(primaryKeys.containsKey(record.getKey())){
+            recordMessageDTO.setMessage("Primary key must be unique");
             return recordMessageDTO;
         }
         else {
-            //Check if primary key is unique
-            Map<String, String> primaryKeys = repository.findAllRecords(databaseTableNames);
-            if(primaryKeys.containsKey(record.getKey())){
-                recordMessageDTO.setMessage("Primary key must be unique");
+
+            //Primary key is unique so now we check the foreign key constraints
+            //In case we have FK attributes, we must check if the FK constraints are respected
+
+            if (existsForeignKeyAttributes) {
+                boolean fkConstraint = checkFKContraint(attributeList, record, databaseName);
+                if (fkConstraint) {
+                    repository.addRecord(record, databaseTableNames);
+                    recordMessageDTO.setRecord(record);
+                    return recordMessageDTO;
+                } else {
+                    recordMessageDTO.setMessage("FK " + fk + " doesn't not refer to an existing element!");
+                    return recordMessageDTO;
+                }
+            }
+            else{
+                repository.addRecord(record, databaseTableNames);
+                recordMessageDTO.setRecord(record);
                 return recordMessageDTO;
             }
-            recordMessageDTO.setRecord(record);
-            repository.addRecord(record, databaseTableNames);
-            return recordMessageDTO;
         }
-
-
-
     }
 
     @Override

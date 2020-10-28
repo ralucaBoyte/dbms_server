@@ -15,6 +15,7 @@ public interface IService {
     Table removeTable(String databaseName, String tableName);
     Index addIndex(Index index, String databaseName, String tableName);
 
+    boolean checkFKContraint(List<Attribute> attributeList, Record record, String databaseName);
     RecordMessageDTO addRecord(Record record, String databaseTableNames);
     List<Record> findAllRecords(String databaseTableNames);
     Record findRecordById(String id, String databaseTableNames);
