@@ -112,7 +112,7 @@ public class Service implements IService{
                     recordMessageDTO.setRecord(record);
                     return recordMessageDTO;
                 } else {
-                    recordMessageDTO.setMessage("FK " + fk + " doesn't not refer to an existing element!");
+                    recordMessageDTO.setMessage("FK " + fk + " does not refer to an existing element!");
                     return recordMessageDTO;
                 }
             }
