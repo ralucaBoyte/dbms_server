@@ -167,8 +167,15 @@ public class Repository implements IRepository {
     }
 
     @Override
-    public void deleteRecord(String id, String databaseTableName) {
+    public void deleteAllRecordsFromTable(String databaseTableName){
+        Map<String, String> records = findAllRecords(databaseTableName);
+        records.forEach((k,v)->{
+            deleteRecord(k,databaseTableName);
+        });
+    }
 
+    @Override
+    public void deleteRecord(String id, String databaseTableName) {
         hashOperations.delete(databaseTableName, id);
     }
 

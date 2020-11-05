@@ -40,6 +40,7 @@ public class Service implements IService{
 
     @Override
     public Table removeTable(String databaseName, String tableName) {
+        repository.deleteAllRecordsFromTable(databaseName+"_"+tableName);
         return repository.removeTable(databaseName, tableName);
     }
 

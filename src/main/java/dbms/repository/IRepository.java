@@ -14,7 +14,7 @@ public interface IRepository {
     Table getTableByDatabaseName(String databaseName,String tableName);
     Index addIndex(Index index, String databaseName, String tableName);
     List<Attribute> findAllAttributesForDB_Table(String databaseName, String tableName);
-
+    void deleteAllRecordsFromTable(String databaseTableName);
     List<Table> getAllTables(String database);
 
     void addRecord(Record record, String databaseTableNames);
