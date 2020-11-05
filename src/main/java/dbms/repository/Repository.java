@@ -104,6 +104,7 @@ public class Repository implements IRepository {
 
     @Override
     public Index addIndex(Index index, String databaseName, String tableName) {
+        index.setFilename(databaseName + "_" + tableName + "_" + index.getName());
         databaseList.forEach(database -> {
             if(database.getName().equals(databaseName)){
                 List<Table> tableList = database.getTables();
@@ -116,7 +117,7 @@ public class Repository implements IRepository {
             }
         });
 
-        Utils.createIndexPath(index.getName(), databaseName, tableName);
+//        Utils.createIndexPath(index.getName(), databaseName, tableName);
         Utils.writeToJSONFile(file,objectMapper,databaseList);
         return index;
     }
@@ -131,7 +132,7 @@ public class Repository implements IRepository {
                 List<Table> tableList = databaseList.get(i).getTables();
                 for(int j = 0; j < tableList.size(); j++){
                     if(tableList.get(j).getName().equals(tableName)){
-                        attributeList = tableList.get(j).getRecords();
+                        attributeList = tableList.get(j).getAttributeList();
                     }
                 }
             }
@@ -182,7 +183,7 @@ public class Repository implements IRepository {
     @Override
     public List<Pair> hasForeignKey(Table table) {
         List<Pair> foreign_keys = new ArrayList<>();
-        for (Attribute attribute: table.getRecords()){
+        for (Attribute attribute: table.getAttributeList()){
             if (attribute.getForeignKey()!= null){
                 foreign_keys.add(attribute.getForeignKey());
             }
