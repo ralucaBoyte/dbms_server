@@ -34,7 +34,36 @@ public class Service implements IService{
     }
 
     public DatabaseTableDTO addTable(String databaseName, Table table){
+        //We must save the table before saving indexes
         Table newTable = repository.addTable(databaseName, table);
+
+        List<Attribute> primaryKeys = new ArrayList<>();
+        String primaryKeyIndexName = "";
+
+        for(Attribute attribute : table.getAttributeList()){
+            if(attribute.getIsUnique() == 1){
+                List<Attribute> attributeList = new ArrayList<>();
+                attributeList.add(attribute);
+                Index index = new Index(attribute.getName() + "Ind", 1, attributeList);
+                repository.addIndex(index, databaseName, table.getName());
+            }
+            if(attribute.getForeignKey() != null){
+                List<Attribute> attributeList = new ArrayList<>();
+                attributeList.add(attribute);
+                Index index = new Index(attribute.getName() + "Ind", 0, attributeList);
+                repository.addIndex(index, databaseName, table.getName());
+
+            }
+
+            if(attribute.getIsPrimaryKey() == 1){
+                primaryKeys.add(attribute);
+                primaryKeyIndexName += attribute.getName() + ";";
+            }
+        }
+
+
+        Index index = new Index(primaryKeyIndexName.substring(0, primaryKeyIndexName.length()-1) + "Ind", 0, primaryKeys);
+        repository.addIndex(index, databaseName, table.getName());
         return new DatabaseTableDTO(databaseName, newTable);
     }
 

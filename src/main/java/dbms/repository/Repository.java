@@ -105,17 +105,20 @@ public class Repository implements IRepository {
     @Override
     public Index addIndex(Index index, String databaseName, String tableName) {
         index.setFilename(databaseName + "_" + tableName + "_" + index.getName());
-        databaseList.forEach(database -> {
+
+        for(Database database: databaseList){
             if(database.getName().equals(databaseName)){
                 List<Table> tableList = database.getTables();
-                tableList.forEach(t->{
-                    if (t.getName().equals(tableName)){
-                        List<Index> indexList = t.getIndexList();
+                for(Table table: tableList){
+                    if (table.getName().equals(tableName)){
+                        List<Index> indexList = table.getIndexList();
                         indexList.add(index);
+                        table.setIndexList(indexList);
                     }
-                });
+                }
             }
-        });
+        }
+
 
 //        Utils.createIndexPath(index.getName(), databaseName, tableName);
         Utils.writeToJSONFile(file,objectMapper,databaseList);
