@@ -129,5 +129,72 @@
         "indexList": []
       }
     ]
+  },
+  {
+    "name": "New DB",
+    "tables": [
+      {
+        "name": "Tabel1",
+        "filename": "Tabel1",
+        "records": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "notNull": 1,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 1,
+            "foreignKey": null
+          },
+          {
+            "name": "name",
+            "type": "VARCHAR",
+            "notNull": 1,
+            "length": 256,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          },
+          {
+            "name": "age",
+            "type": "INTEGER",
+            "notNull": 1,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          }
+        ],
+        "indexList": []
+      },
+      {
+        "name": "Tabel2",
+        "filename": "Tabel2",
+        "records": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 1,
+            "foreignKey": null
+          },
+          {
+            "name": "student_id",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": {
+              "key": "Tabel1",
+              "value": "id"
+            }
+          }
+        ],
+        "indexList": []
+      }
+    ]
   }
 ]

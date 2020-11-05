@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Table {
     private String name, filename;
-    private List<Attribute> records;
+    private List<Attribute> attributeList;
     private List<Index> indexList;
 
     @Override
@@ -12,23 +12,23 @@ public class Table {
         return "Table{" +
                 "name='" + name + '\'' +
                 ", filename='" + filename + '\'' +
-                ", records=" + records +
+                ", attributeList=" + attributeList +
                 ", indexList=" + indexList +
                 '}';
     }
 
-    public Table(String name, String filename, List<Attribute> records) {
+    public Table(String name, String filename, List<Attribute> attributeList) {
         this.name = name;
         this.filename = filename;
-        this.records = records;
+        this.attributeList = attributeList;
     }
 
     public Table(){}
 
-    public Table(String name, String filename, List<Attribute> records, List<Index> indexList) {
+    public Table(String name, String filename, List<Attribute> attributeList, List<Index> indexList) {
         this.name = name;
         this.filename = filename;
-        this.records = records;
+        this.attributeList = attributeList;
         this.indexList = indexList;
     }
 
@@ -38,14 +38,6 @@ public class Table {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<Attribute> getRecords() {
-        return records;
-    }
-
-    public void setRecords(List<Attribute> records) {
-        this.records = records;
     }
 
     public String getFilename() {
@@ -62,5 +54,13 @@ public class Table {
 
     public void setIndexList(List<Index> indexList) {
         this.indexList = indexList;
+    }
+
+    public List<Attribute> getAttributeList() {
+        return attributeList;
+    }
+
+    public void setAttributeList(List<Attribute> attributeList) {
+        this.attributeList = attributeList;
     }
 }
