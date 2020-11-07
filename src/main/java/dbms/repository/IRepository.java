@@ -16,6 +16,7 @@ public interface IRepository {
     List<Attribute> findAllAttributesForDB_Table(String databaseName, String tableName);
     void deleteAllRecordsFromTable(String databaseTableName);
     List<Table> getAllTables(String database);
+    List<Index> getAllIndexesForDBandTable(String databaseName, String tableName);
 
     void addRecord(Record record, String databaseTableNames);
     Map<String, String> findAllRecords(String databaseTableNames);

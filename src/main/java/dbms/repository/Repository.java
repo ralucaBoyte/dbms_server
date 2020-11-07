@@ -156,6 +156,22 @@ public class Repository implements IRepository {
     }
 
     @Override
+    public List<Index> getAllIndexesForDBandTable(String databaseName, String tableName) {
+        List<Index> indexList = new ArrayList<>();
+        for(int i = 0; i < databaseList.size(); i++){
+            if(databaseList.get(i).getName().equals(databaseName)){
+                List<Table> tableList = databaseList.get(i).getTables();
+                for(int j = 0; j < tableList.size(); j++){
+                    if(tableList.get(j).getName().equals(tableName)){
+                        indexList = tableList.get(j).getIndexList();
+                    }
+                }
+            }
+        }
+        return indexList;
+    }
+
+    @Override
     public void addRecord(Record record, String databaseTableNames) {
         hashOperations.put(databaseTableNames, record.getKey(), record.getValue());
     }

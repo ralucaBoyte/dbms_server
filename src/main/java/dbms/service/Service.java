@@ -122,35 +122,81 @@ public class Service implements IService{
         String fk = "";
         List<Attribute> attributeList = repository.findAllAttributesForDB_Table(databaseName, tableName);
 
-        boolean existsForeignKeyAttributes = attributeList.stream().anyMatch(attribute -> attribute.getForeignKey() != null);
+        //PRIMARY KEY VERIFICATION USING INDEX FILES
+        int pk_number = record.getKey().split(";").length;
+        String pkAttributes = "";
+        for(int i = 0; i < pk_number; i++){
+            pkAttributes += attributeList.get(i).getName();
+        }
+
+        String primaryKeyIndexFile = databaseTableNames + "_" + pkAttributes + "Ind";
+        Map<String, String> allRecordsFromPKIndex = repository.findAllRecords(primaryKeyIndexFile);
+
+        String recordMessage = "";
 
         //Check if primary key is unique
-        Map<String, String> primaryKeys = repository.findAllRecords(databaseTableNames);
-        if(primaryKeys.containsKey(record.getKey())){
-            recordMessageDTO.setMessage("Primary key must be unique");
+        if(allRecordsFromPKIndex.containsKey(record.getKey())) {
+            recordMessage += "Primary key must be unique!\n";
+        }
+
+        //UNIQUE KEY and FOREIGN KEY VERIFICATION USING INDEX FILES
+        List<Pair> uniqueKeys = new ArrayList<>();
+        List<Pair> foreignKeys = new ArrayList<>();
+
+
+         for(int i = pk_number; i < attributeList.size(); i++){
+             String attributeName = attributeList.get(i).getName();
+             String valueForAttribute = record.getValue().split(";")[i-pk_number];
+             if(attributeList.get(i).getIsUnique() == 1){
+                 String uniqueKeyIndexFile = databaseTableNames + "_" + attributeName + "Ind";
+                 Map<String, String> allRecordsFromUKIndex = repository.findAllRecords(uniqueKeyIndexFile);
+                 if(allRecordsFromUKIndex.keySet().stream().anyMatch(unique->unique.equals(valueForAttribute))){
+                     recordMessage += attributeName + " is unique!\n";
+                 }
+                 else{
+                     uniqueKeys.add(new Pair(attributeName, new Record(valueForAttribute, record.getKey())));
+                 }
+             }
+             if (attributeList.get(i).getForeignKey() != null){
+                 String parentPKIndexFile = databaseName + "_" + attributeList.get(i).getForeignKey().getKey().toString() + "_" + attributeList.get(i).getForeignKey().getValue().toString() + "Ind";
+                 Map<String, String> allRecordsFromParentTablePKIndex = repository.findAllRecords(parentPKIndexFile);
+                 boolean existsValueInParentTable = allRecordsFromParentTablePKIndex.containsKey(valueForAttribute);
+                 if(!existsValueInParentTable){
+                     recordMessage += attributeName + " Violation of FK Constraint!\n";
+                 }
+                 else{
+                     String FKIndexFile = databaseTableNames + "_" + attributeName + "Ind";
+                     Map<String, String> allRecordsFromFKIndex = repository.findAllRecords(FKIndexFile);
+                     String valueForCurrentFK = allRecordsFromFKIndex.get(valueForAttribute);
+                     if(valueForCurrentFK == null){
+                         foreignKeys.add(new Pair(attributeName, new Record(valueForAttribute, record.getKey())));
+                     }
+                     else{
+                         foreignKeys.add(new Pair(attributeName, new Record(valueForAttribute, valueForCurrentFK + "#" + record.getKey())));
+                     }
+                 }
+             }
+         }
+
+        //FOREIGN KEY VERIFICATION USING INDEX FILES
+        if(recordMessage != "")
+        {
+            recordMessageDTO.setMessage(recordMessage);
             return recordMessageDTO;
         }
         else {
-
-            //Primary key is unique so now we check the foreign key constraints
-            //In case we have FK attributes, we must check if the FK constraints are respected
-
-            if (existsForeignKeyAttributes) {
-                boolean fkConstraint = checkFKContraint(attributeList, record, databaseName);
-                if (fkConstraint) {
-                    repository.addRecord(record, databaseTableNames);
-                    recordMessageDTO.setRecord(record);
-                    return recordMessageDTO;
-                } else {
-                    recordMessageDTO.setMessage("FK " + fk + " does not refer to an existing element!");
-                    return recordMessageDTO;
-                }
-            }
-            else{
-                repository.addRecord(record, databaseTableNames);
-                recordMessageDTO.setRecord(record);
-                return recordMessageDTO;
-            }
+            repository.addRecord(new Record(record.getKey(), record.getKey()), primaryKeyIndexFile);
+            repository.addRecord(record, databaseTableNames);
+            uniqueKeys.forEach(pair -> {
+                String uniqueKeyIndexFile = databaseTableNames + "_" + pair.getKey() + "Ind";
+                repository.addRecord((Record)pair.getValue(), uniqueKeyIndexFile);
+            });
+            foreignKeys.forEach(pair -> {
+                String FKIndexFile = databaseTableNames + "_" + pair.getKey() + "Ind";
+                repository.addRecord((Record)pair.getValue(), FKIndexFile);
+            });
+            recordMessageDTO.setRecord(record);
+            return recordMessageDTO;
         }
     }
 
@@ -191,14 +237,11 @@ public class Service implements IService{
             List<Attribute> attributeList = repository.findAllAttributesForDB_Table(databaseName, table.getName());
             for(int i = 0; i < attributeList.size(); i ++){
                 if(attributeList.get(i).getForeignKey() != null && attributeList.get(i).getForeignKey().getKey().toString().equals(tableName)){
-                    Map<String, String> recordsList = repository.findAllRecords(databaseName + "_" + table.getName());
+                    Map<String, String> recordsList = repository.findAllRecords(databaseName + "_" + table.getName() + "_" + attributeList.get(i).getName() + "Ind");
 
-                    for(Map.Entry<String, String> value: recordsList.entrySet()){
-                        String []columns = value.getValue().split(";");
-                        if(columns[i-1].equals(recordToBeDeleted.getKey())){
-                            recordToBeDeletedDTO.setMessage("FK constraint violated!");
-                            return recordToBeDeletedDTO;
-                        }
+                    if(recordsList.containsKey(recordToBeDeleted.getKey())){
+                        recordToBeDeletedDTO.setMessage("FK constraint violated!");
+                        return recordToBeDeletedDTO;
                     }
                 }
             }
