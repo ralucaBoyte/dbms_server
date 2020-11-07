@@ -1,11 +1,9 @@
 package dbms.controller;
 
-import dbms.domain.Attribute;
-import dbms.domain.Database;
-import dbms.domain.Index;
-import dbms.domain.Table;
+import dbms.domain.*;
 import dbms.dto.DatabaseTableDTO;
 import dbms.dto.DatabaseTableIndexDTO;
+import dbms.dto.RecordMessageDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import dbms.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -61,6 +60,21 @@ public class Controller {
     public DatabaseTableIndexDTO addIndex(@RequestBody Index index, @PathVariable String databaseName, @PathVariable String tableName){
         Index savedIndex = service.addIndex(index, databaseName, tableName);
         return new DatabaseTableIndexDTO(databaseName, tableName, savedIndex);
+    }
+
+    @RequestMapping(value = "/records/{databaseTableNames}", method = RequestMethod.POST)
+    public RecordMessageDTO addRecord(@RequestBody Record record, @PathVariable("databaseTableNames") final String databaseTableNames){
+        return service.addRecord(record, databaseTableNames);
+    }
+
+    @RequestMapping(value = "/records/{databaseTableNames}", method = RequestMethod.GET)
+    public List<Record> getAllRecords(@PathVariable("databaseTableNames") final String databaseTableNames){
+        return service.findAllRecords(databaseTableNames);
+    }
+
+    @RequestMapping(value = "/records/{databaseTableNames}/{id}", method = RequestMethod.DELETE)
+    public RecordMessageDTO delete(@PathVariable("databaseTableNames") final String databaseTableNames, @PathVariable("id") final String id) {
+        return service.deleteRecord(id, databaseTableNames);
     }
 
 
