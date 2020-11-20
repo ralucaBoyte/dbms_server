@@ -178,7 +178,7 @@
           {
             "name": "name",
             "type": "VARCHAR",
-            "notNull": 0,
+            "notNull": 1,
             "length": 256,
             "isUnique": 1,
             "isPrimaryKey": 0,
@@ -194,7 +194,7 @@
               {
                 "name": "name",
                 "type": "VARCHAR",
-                "notNull": 0,
+                "notNull": 1,
                 "length": 256,
                 "isUnique": 1,
                 "isPrimaryKey": 0,
@@ -244,6 +244,15 @@
               "key": "Parent",
               "value": "id"
             }
+          },
+          {
+            "name": "name",
+            "type": "VARCHAR",
+            "notNull": 0,
+            "length": 256,
+            "isUnique": 1,
+            "isPrimaryKey": 0,
+            "foreignKey": null
           }
         ],
         "indexList": [
@@ -263,6 +272,22 @@
                   "key": "Parent",
                   "value": "id"
                 }
+              }
+            ]
+          },
+          {
+            "name": "nameInd",
+            "filename": "Shopping_Child_nameInd",
+            "isUnique": 1,
+            "attributeList": [
+              {
+                "name": "name",
+                "type": "VARCHAR",
+                "notNull": 0,
+                "length": 256,
+                "isUnique": 1,
+                "isPrimaryKey": 0,
+                "foreignKey": null
               }
             ]
           },
