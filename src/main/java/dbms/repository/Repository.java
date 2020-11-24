@@ -7,15 +7,16 @@ import com.google.gson.reflect.TypeToken;
 import dbms.domain.*;
 import dbms.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.*;
+import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.ScanParams;
+import redis.clients.jedis.ScanResult;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class Repository implements IRepository {
@@ -24,6 +25,7 @@ public class Repository implements IRepository {
     private HashOperations hashOperations;
     ObjectMapper objectMapper;
     private RedisTemplate<String, Object> redisTemplate;
+    private JedisConnectionFactory jedisConnectionFactory;
 
     public Repository(RedisTemplate<String, Object> redisTemplate) {
         this.databaseList = new ArrayList<>();
@@ -171,6 +173,7 @@ public class Repository implements IRepository {
         return indexList;
     }
 
+
     @Override
     public void addRecord(Record record, String databaseTableNames) {
         hashOperations.put(databaseTableNames, record.getKey(), record.getValue());
@@ -209,5 +212,20 @@ public class Repository implements IRepository {
         }
         return foreign_keys;
     }
+
+    @Override
+    public Set<String> getKeysForIndexName(String indexName) {
+        return hashOperations.keys(indexName);
+    }
+    @Override
+    public List<String> getValuesForIndexName(String indexName) {
+        return hashOperations.values(indexName);
+    }
+
+    @Override
+    public List<byte[]> getValuesForCertainKey(byte[] key, byte[] fields) {
+       return redisTemplate.getConnectionFactory().getConnection().hMGet(key, fields);
+    }
+
 
 }
