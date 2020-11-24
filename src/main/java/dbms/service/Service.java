@@ -485,9 +485,12 @@ public class Service implements IService{
         List<Attribute> attributeList = repository.findAllAttributesForDB_Table(databaseName, tableName);
         //List<Attribute> selectedAttributes = new ArrayList<>();
 
-        for(Pair attributeCondition: attributeConditions) {
+        for (Pair attributeCondition : attributeConditions) {
             String attributeName = (String) attributeCondition.getKey();
-            Condition condition = mapper.convertValue(attributeCondition.getValue(), Condition.class);
+
+            List<Condition> conditions = new ArrayList<>();
+            List list = mapper.convertValue(attributeCondition.getValue(), List.class);
+            list.forEach(x->conditions.add(mapper.convertValue(x, Condition.class)));
 
             String indexName = attributeName + "Ind";
             Optional<Index> existsIndexForAttribute = indexList.stream().filter(index1 -> index1.getName().equals(indexName)).findFirst();
@@ -495,8 +498,8 @@ public class Service implements IService{
 
             // ############################################ SAVE POSITIONS OF SELECTED ATTRIBUTES IN A RECORD ##########################################
             Integer position = 0;
-            for(int i = 0; i < attributeList.size(); i++){
-                if(attributeList.get(i).getName().equals(attributeName)){
+            for (int i = 0; i < attributeList.size(); i++) {
+                if (attributeList.get(i).getName().equals(attributeName)) {
                     columnsIndexes.add(i);
                     position = i;
                     break;
@@ -505,23 +508,23 @@ public class Service implements IService{
             // ###############################################################################################################################################
 
 
-            if(condition.getType() != null){
-                if (existsIndexForAttribute.isPresent()) {
-                    String searchKey = databaseName + "_" + tableName + "_" + indexName;
-                    Map<String, String> keysForIndex = repository.findAllRecords(searchKey);
-                    List<String> keysVeryfingCondition = keysVeryfingConditionUsingIndexFile(keysForIndex, condition);
-                    okRecords.removeIf(record -> !keysVeryfingCondition.contains(record.getKey()));
-                }
-                else {
+            for (Condition condition : conditions) {
+                if (condition.getType() != null) {
+                    if (existsIndexForAttribute.isPresent()) {
+                        String searchKey = databaseName + "_" + tableName + "_" + indexName;
+                        Map<String, String> keysForIndex = repository.findAllRecords(searchKey);
+                        List<String> keysVeryfingCondition = keysVeryfingConditionUsingIndexFile(keysForIndex, condition);
+                        okRecords.removeIf(record -> !keysVeryfingCondition.contains(record.getKey()));
+                    } else {
                         checkCondition(condition, okRecords, position);
                     }
                 }
-
+            }
         }
-        List<Integer> columnsIndexesWithoutDuplicates = columnsIndexes.stream()
-                .distinct()
-                .collect(Collectors.toList());
-        return selectedRecords(okRecords, columnsIndexesWithoutDuplicates);
+            List<Integer> columnsIndexesWithoutDuplicates = columnsIndexes.stream()
+                    .distinct()
+                    .collect(Collectors.toList());
+            return selectedRecords(okRecords, columnsIndexesWithoutDuplicates);
     }
 
     @Override
