@@ -16,7 +16,6 @@ public class SelectResultDTO {
         this.data = data;
     }
 
-
     public String getTableName() {
         return tableName;
     }

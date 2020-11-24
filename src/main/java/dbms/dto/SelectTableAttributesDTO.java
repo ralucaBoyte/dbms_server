@@ -8,6 +8,8 @@ public class SelectTableAttributesDTO {
     private String tableName;
     private List<Pair> attributeConditions;
 
+    public SelectTableAttributesDTO(){}
+
     public SelectTableAttributesDTO(String tableName, List<Pair> attributeConditions) {
         this.tableName = tableName;
         this.attributeConditions = attributeConditions;
