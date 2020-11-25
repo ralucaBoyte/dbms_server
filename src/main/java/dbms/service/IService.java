@@ -23,12 +23,9 @@ public interface IService {
     Record findRecordById(String id, String databaseTableNames);
     RecordMessageDTO deleteRecord(String id, String databaseTableNames);
 
-    List<Record> selectedRecords(List<Record> records, List<Integer> positions, boolean distinct);
+    List<Record> selectedRecords(List<Record> records, List<Integer> positions);
     List<Record> selectForTable(SelectTableAttributesDTO selectTableAttribute, String databaseName);
     List<Record> select(List<SelectTableAttributesDTO> selectTableAttributes, String databaseName);
-    List<Record> mergeSort(List<Record> records);
     List<Record> distict(List<Record> records);
-    Integer compare(Record record1, Record record2);
-    List<String> convertRecordToListOfStrings(Record record);
 
 }

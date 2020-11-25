@@ -452,7 +452,7 @@ public class Service implements IService{
 
     //RESULT OF PROJECTION
     @Override
-    public List<Record> selectedRecords(List<Record> records, List<Integer> positions, boolean distinct){
+    public List<Record> selectedRecords(List<Record> records, List<Integer> positions){
         List<Record> selectedRecords = new ArrayList<>();
         List<String> selectedValues = new ArrayList<>();
 
@@ -471,12 +471,7 @@ public class Service implements IService{
             selectedRecords.add(new Record(pk, StringUtils.join(selectedValues, ';')));
         }
 
-        if(distinct){
-            return distict(selectedRecords);
-        }
-        else{
-            return selectedRecords;
-        }
+        return selectedRecords;
     }
 
 
@@ -484,7 +479,6 @@ public class Service implements IService{
     public List<Record> selectForTable(SelectTableAttributesDTO selectTableAttribute, String databaseName) {
         ObjectMapper mapper = new ObjectMapper();
         String tableName = selectTableAttribute.getTableName();
-        boolean distict = selectTableAttribute.isDistinct();
         List<Index> indexList = repository.getAllIndexesForDBandTable(databaseName, tableName);
         List<Pair> attributeConditions = selectTableAttribute.getAttributeConditions();
         List<Record> okRecords = findAllRecords(databaseName + "_" + tableName);
@@ -531,124 +525,29 @@ public class Service implements IService{
             List<Integer> columnsIndexesWithoutDuplicates = columnsIndexes.stream()
                     .distinct()
                     .collect(Collectors.toList());
-            return selectedRecords(okRecords, columnsIndexesWithoutDuplicates, distict);
+            return selectedRecords(okRecords, columnsIndexesWithoutDuplicates);
     }
 
     @Override
     public List<Record> select(List<SelectTableAttributesDTO> selectTableAttributes, String databaseName) {
         List<Record> recordsResults = selectForTable(selectTableAttributes.get(0), databaseName);
+        if(selectTableAttributes.get(0).isDistinct()){
+            return distict(recordsResults);
+        }
         return recordsResults;
     }
 
-
-    @Override
-    public List<Record> mergeSort(List<Record> records) {
-        List<Record> left = new ArrayList<>();
-        List<Record> right = new ArrayList<>();
-        int center;
-
-        if (records.size() == 1) {
-            return records;
-        } else {
-            center = records.size()/2;
-            // copy the left half of whole into the left.
-            for (int i=0; i<center; i++) {
-                left.add(records.get(i));
-            }
-
-            //copy the right half of whole into the new arraylist.
-            for (int i=center; i<records.size(); i++) {
-                right.add(records.get(i));
-            }
-
-            // Sort the left and right halves of the arraylist.
-            left  = mergeSort(left);
-            right = mergeSort(right);
-
-            // Merge the results back together.
-            merge(left, right, records);
-        }
-        return records;
-    }
 
     @Override
     public List<Record> distict(List<Record> records) {
         MergeSort mergeSort = new MergeSort();
         Record[] recordsArray = new Record[records.size()];
         records.toArray(recordsArray);
-        mergeSort.sort(recordsArray, 0, recordsArray.length-1);
-
-        List<Record> distinctRecords = Arrays.asList(recordsArray);
+        Record[] result = mergeSort.mergeSort(recordsArray);
+        result = Arrays.stream(result).filter(Objects::nonNull).toArray(Record[]::new);
+        List<Record> distinctRecords = Arrays.asList(result);
         return distinctRecords;
     }
 
-    private void merge(List<Record> left, List<Record> right, List<Record> whole) {
-        int leftIndex = 0;
-        int rightIndex = 0;
-        int wholeIndex = 0;
 
-        Integer comparison = 0;
-        // As long as neither the left nor the right ArrayList has
-        // been used up, keep taking the smaller of left.get(leftIndex)
-        // or right.get(rightIndex) and adding it at both.get(bothIndex).
-        while (leftIndex < left.size() && rightIndex < right.size()) {
-            comparison = compare(left.get(leftIndex), (right.get(rightIndex)));
-            if(comparison == 0){
-                whole.set(wholeIndex, left.get(leftIndex));
-                leftIndex++;
-                rightIndex++;
-            }
-            else {
-                if (comparison < 0){
-                    whole.set(wholeIndex, left.get(leftIndex));
-                    leftIndex++;
-                } else {
-                    whole.set(wholeIndex, right.get(rightIndex));
-                    rightIndex++;
-                }
-            }
-            wholeIndex++;
-        }
-
-        List<Record> rest;
-        int restIndex;
-        if (leftIndex >= left.size()) {
-            // The left ArrayList has been use up...
-            rest = right;
-            restIndex = rightIndex;
-        } else {
-            // The right ArrayList has been used up...
-            rest = left;
-            restIndex = leftIndex;
-        }
-
-        // Copy the rest of whichever ArrayList (left or right) was not used up.
-        for (int i=restIndex; i<rest.size(); i++) {
-            whole.set(wholeIndex, rest.get(i));
-            wholeIndex++;
-        }
-    }
-
-    @Override
-    public Integer compare(Record record1, Record record2) {
-        boolean ok = true;
-        List<String> record1Value = convertRecordToListOfStrings(record1);
-        List<String> record2Value = convertRecordToListOfStrings(record2);
-
-        Integer comparison = 0;
-        for(int i = 0; i < record1Value.size() && ok; i++){
-            comparison = record1Value.get(i).compareTo(record2Value.get(i));
-            if(comparison > 0 || comparison < 0){
-                ok = false;
-                break;
-            }
-        }
-        return comparison;
-    }
-
-    @Override
-    public List<String> convertRecordToListOfStrings(Record record) {
-        List<String> values = Arrays.asList(record.getValue().split(";"));
-        return values;
-    }
 }
