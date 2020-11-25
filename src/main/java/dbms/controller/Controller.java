@@ -1,9 +1,7 @@
 package dbms.controller;
 
 import dbms.domain.*;
-import dbms.dto.DatabaseTableDTO;
-import dbms.dto.DatabaseTableIndexDTO;
-import dbms.dto.RecordMessageDTO;
+import dbms.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import dbms.service.IService;
 
 import java.util.List;
-import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -75,6 +72,11 @@ public class Controller {
     @RequestMapping(value = "/records/{databaseTableNames}/{id}", method = RequestMethod.DELETE)
     public RecordMessageDTO delete(@PathVariable("databaseTableNames") final String databaseTableNames, @PathVariable("id") final String id) {
         return service.deleteRecord(id, databaseTableNames);
+    }
+
+    @RequestMapping(value = "/select/{databaseName}", method = RequestMethod.POST)
+    public List<Record> select(@RequestBody List<SelectTableAttributesDTO> selectTableAttributes, @PathVariable("databaseName") final String databaseName){
+        return service.select(selectTableAttributes, databaseName);
     }
 
 
