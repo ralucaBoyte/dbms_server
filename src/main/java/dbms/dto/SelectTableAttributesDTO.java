@@ -7,19 +7,23 @@ import java.util.List;
 public class SelectTableAttributesDTO {
     private String tableName;
     private List<Pair> attributeConditions;
+    private boolean distinct;
 
     public SelectTableAttributesDTO(){}
 
-    public SelectTableAttributesDTO(String tableName, List<Pair> attributeConditions) {
+    public SelectTableAttributesDTO(String tableName, List<Pair> attributeConditions, boolean distinct) {
         this.tableName = tableName;
         this.attributeConditions = attributeConditions;
+        this.distinct = distinct;
     }
+
 
     @Override
     public String toString() {
-        return "SelectTableAttributes{" +
+        return "SelectTableAttributesDTO{" +
                 "tableName='" + tableName + '\'' +
                 ", attributeConditions=" + attributeConditions +
+                ", distinct=" + distinct +
                 '}';
     }
 
@@ -37,5 +41,13 @@ public class SelectTableAttributesDTO {
 
     public void setAttributeConditions(List<Pair> attributeConditions) {
         this.attributeConditions = attributeConditions;
+    }
+
+    public boolean isDistinct() {
+        return distinct;
+    }
+
+    public void setDistinct(boolean distinct) {
+        this.distinct = distinct;
     }
 }
