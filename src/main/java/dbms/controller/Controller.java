@@ -80,4 +80,10 @@ public class Controller {
     }
 
 
+    @RequestMapping(value = "/records/{databaseTableNames}/{field}", method = RequestMethod.POST)
+    public RecordMessageDTO addRecord(@PathVariable("databaseTableNames") final String databaseTableNames, @PathVariable("field") final String field){
+        return service.getValueForGivenKey(databaseTableNames, field);
+    }
+
+
 }

@@ -1,8 +1,6 @@
 package dbms.repository;
 
 import dbms.domain.*;
-import redis.clients.jedis.ScanParams;
-import redis.clients.jedis.ScanResult;
 
 import java.util.List;
 import java.util.Map;
@@ -47,4 +45,6 @@ public interface IRepository {
     List<String> getValuesForIndexName(String indexName);
 
     List<byte[]> getValuesForCertainKey(byte[] key, byte[] fields);
+
+    List<String> getValuesForGivenKey(String key, String fields);
 }

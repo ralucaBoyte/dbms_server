@@ -6,12 +6,13 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import dbms.domain.*;
 import dbms.utils.Utils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.*;
-import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.ScanParams;
-import redis.clients.jedis.ScanResult;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+import net.csdn.common.settings.Settings;
+
 
 import java.io.*;
 import java.nio.file.Files;
@@ -23,16 +24,19 @@ public class Repository implements IRepository {
     private List<Database> databaseList;
     private File file;
     private HashOperations hashOperations;
+    //private JedisPool pool;
     ObjectMapper objectMapper;
     private RedisTemplate<String, Object> redisTemplate;
     private JedisConnectionFactory jedisConnectionFactory;
 
-    public Repository(RedisTemplate<String, Object> redisTemplate) {
+    public Repository(RedisTemplate<String, Object> redisTemplate, JedisConnectionFactory jedisConnectionFactory) {
         this.databaseList = new ArrayList<>();
         this.redisTemplate = redisTemplate;
+        this.jedisConnectionFactory = jedisConnectionFactory;
         objectMapper = new ObjectMapper();
         file = new File("Catalog.json");
         hashOperations = this.redisTemplate.opsForHash();
+
         try {
             Gson gson = new Gson();
             Reader reader = Files.newBufferedReader(Paths.get("Catalog.json"));
@@ -40,12 +44,27 @@ public class Repository implements IRepository {
             if(databaseList == null){
                 this.databaseList = new ArrayList<>();
             }
+
+            //pool = new JedisPool(new JedisPoolConfig(), settings.get("redis.host"), settings.getAsInt("redis.port", 6379));
             reader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
+
+//    public Jedis borrow() {
+//        return pool.getResource();
+//    }
+
+//    @Inject
+//    public RedisClient(Settings settings) {
+//        try {
+//            pool = new JedisPool(new JedisPoolConfig(), settings.get("redis.host"), settings.getAsInt("redis.port", 6379));
+//        } catch (SettingsException e) {
+//// ignore
+//        }
+//    }
 
     public Database addDatabase(Database database) {
         databaseList.add(database);
@@ -225,6 +244,12 @@ public class Repository implements IRepository {
     @Override
     public List<byte[]> getValuesForCertainKey(byte[] key, byte[] fields) {
        return redisTemplate.getConnectionFactory().getConnection().hMGet(key, fields);
+    }
+
+    @Override
+    public List<String> getValuesForGivenKey(String key, String fields) {
+        Jedis jedis = (Jedis) redisTemplate.getConnectionFactory().getConnection().getNativeConnection();
+        return jedis.hmget(key, fields);
     }
 
 
