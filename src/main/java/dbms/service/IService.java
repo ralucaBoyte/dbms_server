@@ -22,6 +22,7 @@ public interface IService {
     List<Record> findAllRecords(String databaseTableNames);
     Record findRecordById(String id, String databaseTableNames);
     RecordMessageDTO deleteRecord(String id, String databaseTableNames);
+    RecordMessageDTO getValueForGivenKey(String indexFile, String fields);
 
     List<Record> selectedRecords(List<Record> records, List<Integer> positions);
     List<Record> selectForTable(SelectTableAttributesDTO selectTableAttribute, String databaseName);
