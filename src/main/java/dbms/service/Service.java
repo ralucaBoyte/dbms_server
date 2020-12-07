@@ -5,16 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dbms.domain.*;
 import dbms.dto.DatabaseTableDTO;
 import dbms.dto.RecordMessageDTO;
-import dbms.dto.SelectResultDTO;
 import dbms.dto.SelectTableAttributesDTO;
 import dbms.repository.IRepository;
+import dbms.utils.Join;
+import dbms.utils.MergeSort;
 import org.apache.tomcat.util.buf.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import redis.clients.jedis.ScanParams;
-import redis.clients.jedis.ScanResult;
 
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -343,6 +341,14 @@ public class Service implements IService{
     }
 
 
+    @Override
+    public Record getRecordForGivenIndexFilenameAndField(String indexFilename, String fields){
+        String givenValueForKey = repository.getValuesForGivenKey(indexFilename, fields).get(0);
+        Record record = new Record(fields, givenValueForKey);
+        return record;
+    }
+
+
     public List<String> keysVeryfingConditionUsingIndexFile(Map<String, String> keysForIndex, Condition condition){
         List<String> keysVeryfingCondition = new ArrayList<>();
         List<String> values = new ArrayList<>();
@@ -389,6 +395,56 @@ public class Service implements IService{
                 .distinct()
                 .collect(Collectors.toList());
     }
+
+    public boolean checkJoinedTablesCondition(Condition condition, Record record, Integer tablePosition, Integer attributePosition){
+        Double attributeValue;
+        switch (condition.getType()) {
+            case EQUAL:
+                if(condition.getValue().equals(record.getValue().split("\\|")[tablePosition].split("\\;")[attributePosition])) {
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            case LESS_THAN:
+                attributeValue = Double.parseDouble(record.getValue().split("\\|")[tablePosition].split("\\;")[attributePosition]);
+                if(attributeValue < Double.parseDouble(condition.getValue())){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+
+            case GREATER_THAN:
+                attributeValue = Double.parseDouble(record.getValue().split("\\|")[tablePosition].split("\\;")[attributePosition]);
+                if(attributeValue > Double.parseDouble(condition.getValue())){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+
+            case LESS_EQUAL_THAN:
+                attributeValue = Double.parseDouble(record.getValue().split("\\|")[tablePosition].split("\\;")[attributePosition]);
+                if(attributeValue <= Double.parseDouble(condition.getValue())){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+
+            case GREATER_EQUAL_THAN:
+                attributeValue = Double.parseDouble(record.getValue().split("\\|")[tablePosition].split("\\;")[attributePosition]);
+                if(attributeValue >= Double.parseDouble(condition.getValue())){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+        }
+        return false;
+    }
+
 
     public void checkCondition(Condition condition, List<Record> records, Integer position){
         Integer attributeValue;
@@ -484,7 +540,7 @@ public class Service implements IService{
         List<Record> okRecords = findAllRecords(databaseName + "_" + tableName);
         List<Integer> columnsIndexes = new ArrayList<>();
         List<Attribute> attributeList = repository.findAllAttributesForDB_Table(databaseName, tableName);
-        //List<Attribute> selectedAttributes = new ArrayList<>();
+
 
         for (Pair attributeCondition : attributeConditions) {
             String attributeName = (String) attributeCondition.getKey();
@@ -529,25 +585,144 @@ public class Service implements IService{
     }
 
     @Override
-    public List<Record> select(List<SelectTableAttributesDTO> selectTableAttributes, String databaseName) {
-        List<Record> recordsResults = selectForTable(selectTableAttributes.get(0), databaseName);
-        if(selectTableAttributes.get(0).isDistinct()){
-            return distict(recordsResults);
+    public List<Record> select(SelectTableAttributesDTO selectTableAttributes, String databaseName) {
+        String tableName = selectTableAttributes.getTableName();
+        List<String> tableNames = Arrays.asList(tableName.split("\\|"));
+
+        if(tableNames.size() == 1) {
+            List<Record> recordsResults = selectForTable(selectTableAttributes, databaseName);
+            return sort(recordsResults, selectTableAttributes.isDistinct(), "values");
         }
-        return recordsResults;
+        else{
+            Table R = repository.getTableByDatabaseName(databaseName, tableNames.get(0));
+            List<Table> joinedTables = new ArrayList<>();
+            List<Record> joinedRecords = new ArrayList<>();
+            joinedTables.add(R);
+
+            for(int i = 1; i < tableNames.size(); i++){
+                Table S = repository.getTableByDatabaseName(databaseName, tableNames.get(i));
+                joinedRecords = Join.mergeJoin(joinedTables, joinedRecords, databaseName, S, this);
+                joinedTables.add(S);
+            }
+
+            List<Record> finalJoinedRecords = joinedRecordsResult(selectTableAttributes.getAttributeConditions(), joinedTables, joinedRecords);
+            return finalJoinedRecords;
+        }
+    }
+
+
+    public List<Record> joinedRecordsResult(List<Pair> attributeConditions, List<Table> joinedTables, List<Record> joinedRecords){
+        if (attributeConditions.size() == 0){
+            return joinedRecords;
+        }
+        else{
+            List<Record> finalJoinedRecords = new ArrayList<>();
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            for(Record record: joinedRecords){
+                Record recordToBeAdded = new Record();
+
+                recordToBeAdded.setKey("");
+                recordToBeAdded.setValue("");
+
+                String recordKey = "";
+                String recordValue = "";
+
+                String keyToBeAdded = "";
+                String valueToBeAdded = "";
+
+                boolean ok = true;
+                for(int i = 0; i < attributeConditions.size() && ok; i++){
+                    String tableName = attributeConditions.get(i).getKey().toString().split("\\.")[0];
+                    String attributeName = attributeConditions.get(i).getKey().toString().split("\\.")[1];
+
+                    Integer tablePosition = getTablePositionOfGivenTableInJoinedTables(joinedTables, tableName);
+                    Integer attributePosition = getPositionOfGivenAttribute(joinedTables.get(tablePosition), attributeName);
+
+                    List<Condition> conditions = new ArrayList<>();
+                    List list = mapper.convertValue(attributeConditions.get(i).getValue(), List.class);
+                    list.forEach(x->conditions.add(mapper.convertValue(x, Condition.class)));
+
+
+                    if(conditions.size() == 0){
+                        keyToBeAdded = record.getKey().split("\\|")[tablePosition];
+                        valueToBeAdded = record.getValue().split("\\|")[tablePosition].split("\\;")[attributePosition];
+                        recordKey += keyToBeAdded + "|";
+                        recordValue += valueToBeAdded + ";";
+                    }
+                    else {
+                        for (Condition condition : conditions) {
+                            if (!checkJoinedTablesCondition(condition, record, tablePosition, attributePosition)) {
+                                ok = false;
+                                break;
+                            } else {
+                                keyToBeAdded = record.getKey().split("\\|")[tablePosition];
+                                valueToBeAdded = record.getValue().split("\\|")[tablePosition].split("\\;")[attributePosition];
+                                recordKey += keyToBeAdded + "|";
+                                recordValue += valueToBeAdded + ";";
+                            }
+                        }
+                    }
+
+
+                    if(ok && i == attributeConditions.size()-1) {
+                        recordKey = recordKey.substring(0, recordKey.length() - 1);
+                        recordValue = recordValue.substring(0, recordValue.length() - 1);
+                        recordToBeAdded.setKey(recordKey);
+                        recordToBeAdded.setValue(recordValue);
+                        finalJoinedRecords.add(recordToBeAdded);
+                    }
+
+                }
+
+            }
+            return finalJoinedRecords;
+        }
+
     }
 
 
     @Override
-    public List<Record> distict(List<Record> records) {
+    public List<Record> sort(List<Record> records, boolean distinct, String sortingField ) {
         MergeSort mergeSort = new MergeSort();
         Record[] recordsArray = new Record[records.size()];
         records.toArray(recordsArray);
-        Record[] result = mergeSort.mergeSort(recordsArray);
+        Record[] result = mergeSort.mergeSort(recordsArray, distinct, sortingField);
         result = Arrays.stream(result).filter(Objects::nonNull).toArray(Record[]::new);
         List<Record> distinctRecords = Arrays.asList(result);
         return distinctRecords;
     }
 
+    public Integer getPositionOfFKAttribute(Table R, Table S){
+        List<Attribute> attributeList = R.getAttributeList();
+
+        for(int i = 0; i < attributeList.size(); i++){
+            if (attributeList.get(i).getForeignKey() != null && attributeList.get(i).getForeignKey().getKey().equals(S.getName())){
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    public Integer getTablePositionOfGivenTableInJoinedTables(List<Table> joinedTables, String tableName){
+
+        for(int i = 0; i < joinedTables.size(); i++){
+            if (joinedTables.get(i).getName().equals(tableName)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public Integer getPositionOfGivenAttribute(Table R, String attributeName){
+        for(int i = 0; i < R.getAttributeList().size(); i++){
+            if (R.getAttributeList().get(i).getName().equals(attributeName)){
+                return i;
+            }
+        }
+        return -1;
+
+    }
 
 }

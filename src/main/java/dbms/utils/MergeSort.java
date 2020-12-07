@@ -1,12 +1,15 @@
-package dbms.domain;
+package dbms.utils;
 
+import dbms.domain.Record;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class MergeSort
 {
 
-    public Record[] mergeSort(Record[] a) {
+    public Record[] mergeSort(Record[] a, boolean distinct, String sortingField) {
         if (a.length > 1) {
             int mid = a.length / 2;
             Record[] l = new Record[mid];
@@ -18,14 +21,14 @@ public class MergeSort
             for (int i = mid; i < a.length; i++) {
                 r[i - mid] = a[i];
             }
-            Record[] l1 = mergeSort(l);
-            Record[] l2 = mergeSort(r);
-            return merge(l1, l2);
+            Record[] l1 = mergeSort(l, distinct, sortingField);
+            Record[] l2 = mergeSort(r, distinct, sortingField);
+            return merge(l1, l2, distinct, sortingField);
         }
         return a;
     }
 
-    public Record[] merge(Record[] l, Record[] r){
+    public Record[] merge(Record[] l, Record[] r, boolean distinct, String sortingField){
         int m = l.length;
         int n = r.length;
         int k = 0;
@@ -43,10 +46,16 @@ public class MergeSort
                 }
                 else
                 {
-                    comparison = compare(l[i], r[j]);
+                    comparison = compare(l[i], r[j], sortingField);
                     if(comparison == 0){
-                        C[k++] = r[j++];
-                        i++;
+                        if(distinct){
+                            C[k++] = r[j++];
+                            i++;
+                        }
+                        else{
+                            C[k++] = r[j++];
+                        }
+
                     }
                     else{
                         if(comparison < 0){
@@ -63,7 +72,7 @@ public class MergeSort
     }
 
 
-    public Integer compare(Record record1, Record record2) {
+    public Integer compare(Record record1, Record record2, String sortingField) {
         boolean ok = true;
 
         if(record1 == null){
@@ -73,8 +82,8 @@ public class MergeSort
             return -1;
         }
 
-        List<String> record1Value = convertRecordToListOfStrings(record1);
-        List<String> record2Value = convertRecordToListOfStrings(record2);
+        List<String> record1Value = convertRecordToListOfStrings(record1, sortingField);
+        List<String> record2Value = convertRecordToListOfStrings(record2, sortingField);
 
         Integer comparison = 0;
         for(int i = 0; i < record1Value.size() && ok; i++){
@@ -87,8 +96,15 @@ public class MergeSort
         return comparison;
     }
 
-    public List<String> convertRecordToListOfStrings(Record record) {
-        List<String> values = Arrays.asList(record.getValue().split(";"));
+    public List<String> convertRecordToListOfStrings(Record record, String sortingFields) {
+        List values;
+        if (sortingFields.equals("key")){
+            values = Arrays.asList(record.getKey().split(";"));
+        }
+        else{
+            values = Arrays.asList(record.getValue().split(";"));
+        }
+
         return values;
     }
 

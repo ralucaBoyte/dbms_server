@@ -46,5 +46,5 @@ public interface IRepository {
 
     List<String> getValuesForIndexName(String indexName);
 
-    List<byte[]> getValuesForCertainKey(byte[] key, byte[] fields);
+    List<String> getValuesForGivenKey(String key, String fields);
 }

@@ -22,10 +22,15 @@ public interface IService {
     List<Record> findAllRecords(String databaseTableNames);
     Record findRecordById(String id, String databaseTableNames);
     RecordMessageDTO deleteRecord(String id, String databaseTableNames);
+    //String getValuesForGivenIndex(String indexFilename, String fields);
 
     List<Record> selectedRecords(List<Record> records, List<Integer> positions);
     List<Record> selectForTable(SelectTableAttributesDTO selectTableAttribute, String databaseName);
-    List<Record> select(List<SelectTableAttributesDTO> selectTableAttributes, String databaseName);
-    List<Record> distict(List<Record> records);
+    List<Record> select(SelectTableAttributesDTO selectTableAttributes, String databaseName);
+    List<Record> sort(List<Record> records, boolean distinct, String sortingField);
+    Record getRecordForGivenIndexFilenameAndField(String indexFilename, String fields);
+    //List<Record> sort_merge_join();
+    Integer getPositionOfFKAttribute(Table R, Table S);
+
 
 }

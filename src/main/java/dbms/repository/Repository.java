@@ -6,12 +6,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import dbms.domain.*;
 import dbms.utils.Utils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.*;
-import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.ScanParams;
-import redis.clients.jedis.ScanResult;
+import redis.clients.jedis.Jedis;
+
 
 import java.io.*;
 import java.nio.file.Files;
@@ -26,6 +24,7 @@ public class Repository implements IRepository {
     ObjectMapper objectMapper;
     private RedisTemplate<String, Object> redisTemplate;
     private JedisConnectionFactory jedisConnectionFactory;
+    private Jedis jedisConnection;
 
     public Repository(RedisTemplate<String, Object> redisTemplate) {
         this.databaseList = new ArrayList<>();
@@ -33,6 +32,7 @@ public class Repository implements IRepository {
         objectMapper = new ObjectMapper();
         file = new File("Catalog.json");
         hashOperations = this.redisTemplate.opsForHash();
+        jedisConnection = (Jedis) redisTemplate.getConnectionFactory().getConnection().getNativeConnection();
         try {
             Gson gson = new Gson();
             Reader reader = Files.newBufferedReader(Paths.get("Catalog.json"));
@@ -191,10 +191,7 @@ public class Repository implements IRepository {
 
     @Override
     public void deleteAllRecordsFromTable(String databaseTableName){
-        Map<String, String> records = findAllRecords(databaseTableName);
-        records.forEach((k,v)->{
-            deleteRecord(k,databaseTableName);
-        });
+        jedisConnection.del(databaseTableName);
     }
 
     @Override
@@ -222,9 +219,10 @@ public class Repository implements IRepository {
         return hashOperations.values(indexName);
     }
 
+
     @Override
-    public List<byte[]> getValuesForCertainKey(byte[] key, byte[] fields) {
-       return redisTemplate.getConnectionFactory().getConnection().hMGet(key, fields);
+    public List<String> getValuesForGivenKey(String key, String fields) {
+        return jedisConnection.hmget(key, fields);
     }
 
 

@@ -1,1 +1,277 @@
-[{"name":"Shopping","tables":[{"name":"Customer","filename":"Customer","attributeList":[{"name":"customer_code","type":"VARCHAR","notNull":1,"length":256,"isUnique":0,"isPrimaryKey":1,"foreignKey":null},{"name":"city","type":"VARCHAR","notNull":1,"length":256,"isUnique":0,"isPrimaryKey":0,"foreignKey":null},{"name":"phone","type":"VARCHAR","notNull":1,"length":32,"isUnique":0,"isPrimaryKey":0,"foreignKey":null}],"indexList":[]},{"name":"Agent","filename":"Agent","attributeList":[{"name":"agent_code","type":"VARCHAR","notNull":1,"length":256,"isUnique":0,"isPrimaryKey":1,"foreignKey":null},{"name":"name","type":"VARCHAR","notNull":1,"length":256,"isUnique":0,"isPrimaryKey":0,"foreignKey":null},{"name":"commision","type":"INTEGER","notNull":1,"length":0,"isUnique":0,"isPrimaryKey":0,"foreignKey":null},{"name":"phone","type":"VARCHAR","notNull":1,"length":256,"isUnique":0,"isPrimaryKey":0,"foreignKey":null}],"indexList":[]},{"name":"Order","filename":"Order","attributeList":[{"name":"orderId","type":"INTEGER","notNull":1,"length":0,"isUnique":0,"isPrimaryKey":1,"foreignKey":null},{"name":"price","type":"DOUBLE","notNull":1,"length":0,"isUnique":0,"isPrimaryKey":0,"foreignKey":null},{"name":"c_code","type":"VARCHAR","notNull":0,"length":256,"isUnique":0,"isPrimaryKey":0,"foreignKey":{"key":"Customer","value":"customer_code"}},{"name":"a_code","type":"VARCHAR","notNull":0,"length":256,"isUnique":0,"isPrimaryKey":0,"foreignKey":{"key":"Agent","value":"agent_code"}}],"indexList":[]},{"name":"Shop","filename":"Shop","attributeList":[{"name":"shop_id","type":"INTEGER","notNull":0,"length":0,"isUnique":0,"isPrimaryKey":1,"foreignKey":null},{"name":"name","type":"VARCHAR","notNull":1,"length":50,"isUnique":1,"isPrimaryKey":0,"foreignKey":null},{"name":"profit","type":"DOUBLE","notNull":0,"length":0,"isUnique":0,"isPrimaryKey":0,"foreignKey":null}],"indexList":[]},{"name":"Parent","filename":"Parent","attributeList":[{"name":"id","type":"INTEGER","notNull":1,"length":0,"isUnique":0,"isPrimaryKey":1,"foreignKey":null},{"name":"name","type":"VARCHAR","notNull":1,"length":256,"isUnique":1,"isPrimaryKey":0,"foreignKey":null}],"indexList":[{"name":"nameInd","filename":"Shopping_Parent_nameInd","isUnique":1,"attributeList":[{"name":"name","type":"VARCHAR","notNull":1,"length":256,"isUnique":1,"isPrimaryKey":0,"foreignKey":null}]},{"name":"idInd","filename":"Shopping_Parent_idInd","isUnique":0,"attributeList":[{"name":"id","type":"INTEGER","notNull":1,"length":0,"isUnique":0,"isPrimaryKey":1,"foreignKey":null}]}]},{"name":"Child","filename":"Child","attributeList":[{"name":"id","type":"INTEGER","notNull":1,"length":0,"isUnique":0,"isPrimaryKey":1,"foreignKey":null},{"name":"parent_id","type":"INTEGER","notNull":0,"length":0,"isUnique":0,"isPrimaryKey":0,"foreignKey":{"key":"Parent","value":"id"}},{"name":"name","type":"VARCHAR","notNull":0,"length":256,"isUnique":1,"isPrimaryKey":0,"foreignKey":null}],"indexList":[{"name":"parent_idInd","filename":"Shopping_Child_parent_idInd","isUnique":0,"attributeList":[{"name":"parent_id","type":"INTEGER","notNull":0,"length":0,"isUnique":0,"isPrimaryKey":0,"foreignKey":{"key":"Parent","value":"id"}}]},{"name":"nameInd","filename":"Shopping_Child_nameInd","isUnique":1,"attributeList":[{"name":"name","type":"VARCHAR","notNull":0,"length":256,"isUnique":1,"isPrimaryKey":0,"foreignKey":null}]},{"name":"idInd","filename":"Shopping_Child_idInd","isUnique":0,"attributeList":[{"name":"id","type":"INTEGER","notNull":1,"length":0,"isUnique":0,"isPrimaryKey":1,"foreignKey":null}]}]},{"name":"tabelas","filename":"tabelas","attributeList":[{"name":"id","type":"INTEGER","notNull":1,"length":0,"isUnique":0,"isPrimaryKey":1,"foreignKey":null},{"name":"name","type":"VARCHAR","notNull":0,"length":256,"isUnique":1,"isPrimaryKey":0,"foreignKey":null},{"name":"code","type":"INTEGER","notNull":0,"length":0,"isUnique":1,"isPrimaryKey":0,"foreignKey":null},{"name":"age","type":"INTEGER","notNull":1,"length":0,"isUnique":0,"isPrimaryKey":0,"foreignKey":null}],"indexList":[{"name":"nameInd","filename":"Shopping_tabelas_nameInd","isUnique":1,"attributeList":[{"name":"name","type":"VARCHAR","notNull":0,"length":256,"isUnique":1,"isPrimaryKey":0,"foreignKey":null}]},{"name":"codeInd","filename":"Shopping_tabelas_codeInd","isUnique":1,"attributeList":[{"name":"code","type":"INTEGER","notNull":0,"length":0,"isUnique":1,"isPrimaryKey":0,"foreignKey":null}]},{"name":"idInd","filename":"Shopping_tabelas_idInd","isUnique":0,"attributeList":[{"name":"id","type":"INTEGER","notNull":1,"length":0,"isUnique":0,"isPrimaryKey":1,"foreignKey":null}]}]},{"name":"tabel","filename":"tabel","attributeList":[{"name":"id","type":"INTEGER","notNull":1,"length":0,"isUnique":0,"isPrimaryKey":1,"foreignKey":null},{"name":"nume","type":"VARCHAR","notNull":1,"length":256,"isUnique":0,"isPrimaryKey":0,"foreignKey":null},{"name":"age","type":"INTEGER","notNull":0,"length":0,"isUnique":0,"isPrimaryKey":0,"foreignKey":null}],"indexList":[{"name":"idInd","filename":"Shopping_tabel_idInd","isUnique":0,"attributeList":[{"name":"id","type":"INTEGER","notNull":1,"length":0,"isUnique":0,"isPrimaryKey":1,"foreignKey":null}]}]}]}]
+[
+  {
+    "name": "Shopping",
+    "tables": [
+      {
+        "name": "Job",
+        "filename": "Job",
+        "attributeList": [
+          {
+            "name": "job_id",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 1,
+            "foreignKey": null
+          },
+          {
+            "name": "job_title",
+            "type": "VARCHAR",
+            "notNull": 0,
+            "length": 128,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          },
+          {
+            "name": "salary",
+            "type": "INTEGER",
+            "notNull": 1,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          }
+        ],
+        "indexList": [
+          {
+            "name": "job_idInd",
+            "filename": "Shopping_Job_job_idInd",
+            "isUnique": 0,
+            "attributeList": [
+              {
+                "name": "job_id",
+                "type": "INTEGER",
+                "notNull": 0,
+                "length": 0,
+                "isUnique": 0,
+                "isPrimaryKey": 1,
+                "foreignKey": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Department",
+        "filename": "Department",
+        "attributeList": [
+          {
+            "name": "dept_id",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 1,
+            "foreignKey": null
+          },
+          {
+            "name": "dept_name",
+            "type": "VARCHAR",
+            "notNull": 0,
+            "length": 128,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          }
+        ],
+        "indexList": [
+          {
+            "name": "dept_idInd",
+            "filename": "Shopping_Department_dept_idInd",
+            "isUnique": 0,
+            "attributeList": [
+              {
+                "name": "dept_id",
+                "type": "INTEGER",
+                "notNull": 0,
+                "length": 0,
+                "isUnique": 0,
+                "isPrimaryKey": 1,
+                "foreignKey": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Employee",
+        "filename": "Employee",
+        "attributeList": [
+          {
+            "name": "empl_id",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 1,
+            "foreignKey": null
+          },
+          {
+            "name": "first_name",
+            "type": "VARCHAR",
+            "notNull": 1,
+            "length": 128,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          },
+          {
+            "name": "job",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": {
+              "key": "Job",
+              "value": "job_id"
+            }
+          },
+          {
+            "name": "dept",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": {
+              "key": "Department",
+              "value": "dept_id"
+            }
+          }
+        ],
+        "indexList": [
+          {
+            "name": "jobInd",
+            "filename": "Shopping_Employee_jobInd",
+            "isUnique": 0,
+            "attributeList": [
+              {
+                "name": "job",
+                "type": "INTEGER",
+                "notNull": 0,
+                "length": 0,
+                "isUnique": 0,
+                "isPrimaryKey": 0,
+                "foreignKey": {
+                  "key": "Job",
+                  "value": "job_id"
+                }
+              }
+            ]
+          },
+          {
+            "name": "deptInd",
+            "filename": "Shopping_Employee_deptInd",
+            "isUnique": 0,
+            "attributeList": [
+              {
+                "name": "dept",
+                "type": "INTEGER",
+                "notNull": 0,
+                "length": 0,
+                "isUnique": 0,
+                "isPrimaryKey": 0,
+                "foreignKey": {
+                  "key": "Department",
+                  "value": "dept_id"
+                }
+              }
+            ]
+          },
+          {
+            "name": "empl_idInd",
+            "filename": "Shopping_Employee_empl_idInd",
+            "isUnique": 0,
+            "attributeList": [
+              {
+                "name": "empl_id",
+                "type": "INTEGER",
+                "notNull": 0,
+                "length": 0,
+                "isUnique": 0,
+                "isPrimaryKey": 1,
+                "foreignKey": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Task",
+        "filename": "Task",
+        "attributeList": [
+          {
+            "name": "taskId",
+            "type": "",
+            "notNull": 1,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 1,
+            "foreignKey": null
+          },
+          {
+            "name": "name",
+            "type": "VARCHAR",
+            "notNull": 0,
+            "length": 256,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          },
+          {
+            "name": "job",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": {
+              "key": "Job",
+              "value": "job_id"
+            }
+          }
+        ],
+        "indexList": [
+          {
+            "name": "jobInd",
+            "filename": "Shopping_Task_jobInd",
+            "isUnique": 0,
+            "attributeList": [
+              {
+                "name": "job",
+                "type": "INTEGER",
+                "notNull": 0,
+                "length": 0,
+                "isUnique": 0,
+                "isPrimaryKey": 0,
+                "foreignKey": {
+                  "key": "Job",
+                  "value": "job_id"
+                }
+              }
+            ]
+          },
+          {
+            "name": "taskIdInd",
+            "filename": "Shopping_Task_taskIdInd",
+            "isUnique": 0,
+            "attributeList": [
+              {
+                "name": "taskId",
+                "type": "",
+                "notNull": 1,
+                "length": 0,
+                "isUnique": 0,
+                "isPrimaryKey": 1,
+                "foreignKey": null
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

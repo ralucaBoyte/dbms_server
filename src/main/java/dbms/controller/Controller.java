@@ -75,9 +75,10 @@ public class Controller {
     }
 
     @RequestMapping(value = "/select/{databaseName}", method = RequestMethod.POST)
-    public List<Record> select(@RequestBody List<SelectTableAttributesDTO> selectTableAttributes, @PathVariable("databaseName") final String databaseName){
+    public List<Record> select(@RequestBody SelectTableAttributesDTO selectTableAttributes, @PathVariable("databaseName") final String databaseName){
         return service.select(selectTableAttributes, databaseName);
     }
+
 
 
 }
