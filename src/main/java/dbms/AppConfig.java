@@ -22,7 +22,7 @@ public class AppConfig {
     public Service createService(){ return new Service();}
 
     @Bean(name= "dbms/repository")
-    public Repository createRepository(){ return new Repository(redisTemplate, jedisConnectionFactory);}
+    public Repository createRepository(){ return new Repository(redisTemplate);}
 
 
 }

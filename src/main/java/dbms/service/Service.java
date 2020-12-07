@@ -340,15 +340,6 @@ public class Service implements IService{
         return recordToBeDeletedDTO;
     }
 
-    @Override
-    public RecordMessageDTO getValueForGivenKey(String indexFile, String field) {
-        String givenValueForKey = repository.getValuesForGivenKey(indexFile, field).get(0);
-        Record record = new Record(field, givenValueForKey);
-
-        RecordMessageDTO recordMessageDTO = new RecordMessageDTO(record, "msg");
-        return recordMessageDTO;
-    }
-
 
     @Override
     public Record getRecordForGivenIndexFilenameAndField(String indexFilename, String fields){
