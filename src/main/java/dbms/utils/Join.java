@@ -9,8 +9,8 @@ public class Join {
 
     public Join(){}
 
-    public static List<Record> mergeJoin(List<Table> joinedTables, List<Record> joinedRecords, String databaseName, Table tableS, Service service){
-        return join(joinedTables, joinedRecords, databaseName, tableS, service);
+    public static List<Record> join(List<Table> joinedTables, List<Record> joinedRecords, String databaseName, Table tableS, Service service){
+        return mergeJoin(joinedTables, joinedRecords, databaseName, tableS, service);
     }
 
     public static Integer getTablePositionLinkedToGivenTable(List<Table> joinedTables, Table S){
@@ -30,7 +30,7 @@ public class Join {
         return position;
     }
 
-    public static List<Record> join(List<Table> joinedTables, List<Record> joinedRecords, String databaseName, Table S, Service service){
+    public static List<Record> mergeJoin(List<Table> joinedTables, List<Record> joinedRecords, String databaseName, Table S, Service service){
         Integer tableLinkedToSPosition = getTablePositionLinkedToGivenTable(joinedTables, S);
 
         Table R = joinedTables.get(tableLinkedToSPosition);
@@ -109,6 +109,7 @@ public class Join {
         }
 
 
+        joinedTables.add(S);
         return joinedRecords;
     }
 

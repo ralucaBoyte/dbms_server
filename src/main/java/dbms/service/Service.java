@@ -7,6 +7,7 @@ import dbms.dto.DatabaseTableDTO;
 import dbms.dto.RecordMessageDTO;
 import dbms.dto.SelectTableAttributesDTO;
 import dbms.repository.IRepository;
+import dbms.utils.IndexedNestedJoin;
 import dbms.utils.Join;
 import dbms.utils.MergeSort;
 import org.apache.tomcat.util.buf.StringUtils;
@@ -601,8 +602,9 @@ public class Service implements IService{
 
             for(int i = 1; i < tableNames.size(); i++){
                 Table S = repository.getTableByDatabaseName(databaseName, tableNames.get(i));
-                joinedRecords = Join.mergeJoin(joinedTables, joinedRecords, databaseName, S, this);
-                joinedTables.add(S);
+                //joinedRecords = Join.join(joinedTables, joinedRecords, databaseName, S, this);
+                joinedRecords = IndexedNestedJoin.joingUsingIndexes(joinedTables, joinedRecords, S, databaseName, this);
+                //joinedRecords = IndexedNestedJoin.leftOuterJoin(R, S, joinedTables,  databaseName, this);
             }
 
             List<Record> finalJoinedRecords = joinedRecordsResult(selectTableAttributes.getAttributeConditions(), joinedTables, joinedRecords);
