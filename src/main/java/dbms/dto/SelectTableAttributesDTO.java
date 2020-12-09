@@ -8,24 +8,25 @@ public class SelectTableAttributesDTO {
     private String tableName;
     private List<Pair> attributeConditions;
     private boolean distinct;
+    private String join;
+
+    public String getJoin() {
+        return join;
+    }
+
+    public void setJoin(String join) {
+        this.join = join;
+    }
 
     public SelectTableAttributesDTO(){}
 
-    public SelectTableAttributesDTO(String tableName, List<Pair> attributeConditions, boolean distinct) {
+    public SelectTableAttributesDTO(String tableName, List<Pair> attributeConditions, boolean distinct, String join) {
         this.tableName = tableName;
         this.attributeConditions = attributeConditions;
         this.distinct = distinct;
+        this.join = join;
     }
 
-
-    @Override
-    public String toString() {
-        return "SelectTableAttributesDTO{" +
-                "tableName='" + tableName + '\'' +
-                ", attributeConditions=" + attributeConditions +
-                ", distinct=" + distinct +
-                '}';
-    }
 
     public String getTableName() {
         return tableName;
@@ -49,5 +50,15 @@ public class SelectTableAttributesDTO {
 
     public void setDistinct(boolean distinct) {
         this.distinct = distinct;
+    }
+
+    @Override
+    public String toString() {
+        return "SelectTableAttributesDTO{" +
+                "tableName='" + tableName + '\'' +
+                ", attributeConditions=" + attributeConditions +
+                ", distinct=" + distinct +
+                ", join='" + join + '\'' +
+                '}';
     }
 }

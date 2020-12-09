@@ -106,7 +106,7 @@ public class IndexedNestedJoin {
 
     }
 
-    public static List<Record> leftOuterJoin(Table R, Table S, List<Table> joinedTables, String databaseName, Service service) {
+    public static List<Record> leftOuterJoin(Table R, Table S, String joinType, List<Table> joinedTables, String databaseName, Service service) {
         List<Attribute> tableRAttributes = R.getAttributeList();
         List<Record> joinedRecords = new ArrayList<>();
         List<Record> rRecords, sRecords;
@@ -115,18 +115,37 @@ public class IndexedNestedJoin {
 
         boolean SParent = Join.checkExistingFKToGivenTable(tableRAttributes, S);
 
-        //joinedTables.add(S);
-        if(SParent){
+        joinedTables.add(S);
 
-            return indexedNestedLoopJoinFirst2Tables(S, R, joinedTables, databaseName, service);
+        switch (joinType){
+            case "LEFT": {
+                if(SParent){
+                    return indexedNestedLoopJoinFirst2Tables(S, R, joinedTables, databaseName, service);
+                }
+                else{
+                    rRecords = service.findAllRecords(databaseName + "_" + R.getName());
+                    indexFK = S.getIndexList().stream().filter(index -> index.getAttributeList().stream().anyMatch(attribute -> attribute.getForeignKey().getKey().equals(R.getName()))).findFirst();
+                    sRecords = service.findAllRecords(indexFK.get().getFilename());
+                    joinedRecords = nestedLoopLeftOuterJoin(rRecords, sRecords, databaseName, S.getName(), service);
+                    return joinedRecords;
+                }
+            }
+            case "RIGHT":{
+                if(SParent){
+                    sRecords = service.findAllRecords(databaseName + "_" + S.getName());
+                    indexFK = R.getIndexList().stream().filter(index -> index.getAttributeList().stream().anyMatch(attribute -> attribute.getForeignKey().getKey().equals(S.getName()))).findFirst();
+                    rRecords = service.findAllRecords(indexFK.get().getFilename());
+                    joinedRecords = nestedLoopLeftOuterJoin(sRecords, rRecords, databaseName, R.getName(), service);
+                    return joinedRecords;
+                }
+                else {
+                    return indexedNestedLoopJoinFirst2Tables(S, R, joinedTables, databaseName, service);
+                }
+            }
+            default:
+                return null;
         }
-        else{
-            rRecords = service.findAllRecords(databaseName + "_" + R.getName());
-            indexFK = S.getIndexList().stream().filter(index -> index.getAttributeList().stream().anyMatch(attribute -> attribute.getForeignKey().getKey().equals(R.getName()))).findFirst();
-            sRecords = service.findAllRecords(indexFK.get().getFilename());
-            joinedRecords = nestedLoopLeftOuterJoin(rRecords, sRecords, databaseName, S.getName(), service);
-            return joinedRecords;
-        }
+
     }
 
     private static List<Record> nestedLoopLeftOuterJoin(List<Record> parentRecords, List<Record> indexedChildRecords, String databaseName, String childTableName, Service service){
@@ -139,13 +158,13 @@ public class IndexedNestedJoin {
 
             merged = false;
             for(Record indexChildRecord: indexedChildRecords){
-                Record record = new Record();
                 if(parentRecord.getKey().equals(indexChildRecord.getKey())) {
                     merged = true;
                     List<Record> childRecords = getRecordsFromIndexValue(indexChildRecord.getValue(), databaseName, childTableName, service);
                     for (Record childRecord: childRecords){
+                        Record record = new Record();
                         record.setKey(parentRecord.getKey() + "|" + childRecord.getKey());
-                        record.setValue(parentRecord.getValue() + "|" + childRecord.getKey()+";"+childRecord.getValue());
+                        record.setValue(parentRecord.getKey() + ";" + parentRecord.getValue() + "|" + childRecord.getKey()+";"+childRecord.getValue());
                         joinedRecords.add(record);
                     }
                 }
@@ -154,8 +173,8 @@ public class IndexedNestedJoin {
 
             if(merged == false){
                 Record record = new Record();
-                record.setKey(parentRecord.getKey());
-                record.setValue(parentRecord.getValue() + "|NULL");
+                record.setKey(parentRecord.getKey()+"|NULL");
+                record.setValue(parentRecord.getKey() + ";" + parentRecord.getValue() + "|NULL");
                 for(int i = 0; i < attributesForChildRecord-1; i++){
                     record.setValue(record.getValue() + ";NULL");
                 }

@@ -588,6 +588,7 @@ public class Service implements IService{
     @Override
     public List<Record> select(SelectTableAttributesDTO selectTableAttributes, String databaseName) {
         String tableName = selectTableAttributes.getTableName();
+        String joinType = selectTableAttributes.getJoin();
         List<String> tableNames = Arrays.asList(tableName.split("\\|"));
 
         if(tableNames.size() == 1) {
@@ -602,9 +603,19 @@ public class Service implements IService{
 
             for(int i = 1; i < tableNames.size(); i++){
                 Table S = repository.getTableByDatabaseName(databaseName, tableNames.get(i));
-                //joinedRecords = Join.join(joinedTables, joinedRecords, databaseName, S, this);
-                joinedRecords = IndexedNestedJoin.joingUsingIndexes(joinedTables, joinedRecords, S, databaseName, this);
-                //joinedRecords = IndexedNestedJoin.leftOuterJoin(R, S, joinedTables,  databaseName, this);
+                switch (joinType){
+                    case "INNER":
+                        joinedRecords = Join.join(joinedTables, joinedRecords, databaseName, S, this);
+                        //joinedRecords = IndexedNestedJoin.joingUsingIndexes(joinedTables, joinedRecords, S, databaseName, this);
+                        break;
+                    case "LEFT":
+                    case "RIGHT": {
+                        joinedRecords = IndexedNestedJoin.leftOuterJoin(R, S, joinType, joinedTables, databaseName, this);
+                        break;
+                    }
+
+                }
+
             }
 
             List<Record> finalJoinedRecords = joinedRecordsResult(selectTableAttributes.getAttributeConditions(), joinedTables, joinedRecords);
