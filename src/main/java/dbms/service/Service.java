@@ -604,12 +604,12 @@ public class Service implements IService{
             for(int i = 1; i < tableNames.size(); i++){
                 Table S = repository.getTableByDatabaseName(databaseName, tableNames.get(i));
                 switch (joinType){
-                    case "INNER":
+                    case "INNER JOIN":
                         joinedRecords = Join.join(joinedTables, joinedRecords, databaseName, S, this);
                         //joinedRecords = IndexedNestedJoin.joingUsingIndexes(joinedTables, joinedRecords, S, databaseName, this);
                         break;
-                    case "LEFT":
-                    case "RIGHT": {
+                    case "LEFT OUTER JOIN":
+                    case "RIGHT OUTER JOIN": {
                         joinedRecords = IndexedNestedJoin.leftOuterJoin(R, S, joinType, joinedTables, databaseName, this);
                         break;
                     }

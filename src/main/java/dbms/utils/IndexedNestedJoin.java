@@ -118,7 +118,7 @@ public class IndexedNestedJoin {
         joinedTables.add(S);
 
         switch (joinType){
-            case "LEFT": {
+            case "LEFT OUTER JOIN": {
                 if(SParent){
                     return indexedNestedLoopJoinFirst2Tables(S, R, joinedTables, databaseName, service);
                 }
@@ -126,16 +126,16 @@ public class IndexedNestedJoin {
                     rRecords = service.findAllRecords(databaseName + "_" + R.getName());
                     indexFK = S.getIndexList().stream().filter(index -> index.getAttributeList().stream().anyMatch(attribute -> attribute.getForeignKey().getKey().equals(R.getName()))).findFirst();
                     sRecords = service.findAllRecords(indexFK.get().getFilename());
-                    joinedRecords = nestedLoopLeftOuterJoin(rRecords, sRecords, databaseName, S.getName(), service);
+                    joinedRecords = nestedLoopLeftOuterJoin(joinType, rRecords, sRecords, databaseName, S.getName(), service);
                     return joinedRecords;
                 }
             }
-            case "RIGHT":{
+            case "RIGHT OUTER JOIN":{
                 if(SParent){
                     sRecords = service.findAllRecords(databaseName + "_" + S.getName());
                     indexFK = R.getIndexList().stream().filter(index -> index.getAttributeList().stream().anyMatch(attribute -> attribute.getForeignKey().getKey().equals(S.getName()))).findFirst();
                     rRecords = service.findAllRecords(indexFK.get().getFilename());
-                    joinedRecords = nestedLoopLeftOuterJoin(sRecords, rRecords, databaseName, R.getName(), service);
+                    joinedRecords = nestedLoopLeftOuterJoin(joinType, sRecords, rRecords, databaseName, R.getName(), service);
                     return joinedRecords;
                 }
                 else {
@@ -148,7 +148,7 @@ public class IndexedNestedJoin {
 
     }
 
-    private static List<Record> nestedLoopLeftOuterJoin(List<Record> parentRecords, List<Record> indexedChildRecords, String databaseName, String childTableName, Service service){
+    private static List<Record> nestedLoopLeftOuterJoin(String joinType, List<Record> parentRecords, List<Record> indexedChildRecords, String databaseName, String childTableName, Service service){
         List<Record> joinedRecords = new ArrayList<>();
 
         Integer attributesForChildRecord = service.findAllRecords(databaseName + "_" + childTableName).get(0).getValue().split(";").length + 1;
@@ -163,8 +163,15 @@ public class IndexedNestedJoin {
                     List<Record> childRecords = getRecordsFromIndexValue(indexChildRecord.getValue(), databaseName, childTableName, service);
                     for (Record childRecord: childRecords){
                         Record record = new Record();
-                        record.setKey(parentRecord.getKey() + "|" + childRecord.getKey());
-                        record.setValue(parentRecord.getKey() + ";" + parentRecord.getValue() + "|" + childRecord.getKey()+";"+childRecord.getValue());
+
+                        if(joinType.equals("LEFT OUTER JOIN")) {
+                            record.setKey(parentRecord.getKey() + "|" + childRecord.getKey());
+                            record.setValue(parentRecord.getKey() + ";" + parentRecord.getValue() + "|" + childRecord.getKey() + ";" + childRecord.getValue());
+                        }
+                        else{
+                            record.setKey(childRecord.getKey() + "|" + parentRecord.getKey());
+                            record.setValue(childRecord.getKey() + ";" + childRecord.getValue() + "|" + parentRecord.getKey() + ";" + parentRecord.getValue());
+                        }
                         joinedRecords.add(record);
                     }
                 }
@@ -173,10 +180,20 @@ public class IndexedNestedJoin {
 
             if(merged == false){
                 Record record = new Record();
-                record.setKey(parentRecord.getKey()+"|NULL");
-                record.setValue(parentRecord.getKey() + ";" + parentRecord.getValue() + "|NULL");
-                for(int i = 0; i < attributesForChildRecord-1; i++){
-                    record.setValue(record.getValue() + ";NULL");
+                if(joinType.equals("LEFT OUTER JOIN")) {
+                    record.setKey(parentRecord.getKey() + "|NULL");
+                    record.setValue(parentRecord.getKey() + ";" + parentRecord.getValue() + "|NULL");
+                    for (int i = 0; i < attributesForChildRecord - 1; i++) {
+                        record.setValue(record.getValue() + ";NULL");
+                    }
+                }
+                else{
+                    record.setKey("NULL|" + parentRecord.getKey());
+                    record.setValue("NULL|" + parentRecord.getKey() + ";" + parentRecord.getValue());
+                    for (int i = 0; i < attributesForChildRecord - 1; i++) {
+                        record.setValue("NULL;" + record.getValue());
+
+                    }
                 }
                 joinedRecords.add(record);
 
