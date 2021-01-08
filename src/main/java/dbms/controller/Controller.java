@@ -79,6 +79,9 @@ public class Controller {
         return service.select(selectTableAttributes, databaseName);
     }
 
-
+    @RequestMapping(value = "/select/groupBy/{databaseTableNames}", method = RequestMethod.POST)
+    public List<Record> groupBy(@RequestBody GroupByDTO groupByDTO, @PathVariable("databaseTableName") final String databaseTableName){
+        return service.groupBy(databaseTableName, groupByDTO);
+    }
 
 }

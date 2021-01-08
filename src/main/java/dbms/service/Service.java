@@ -4,6 +4,7 @@ package dbms.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dbms.domain.*;
 import dbms.dto.DatabaseTableDTO;
+import dbms.dto.GroupByDTO;
 import dbms.dto.RecordMessageDTO;
 import dbms.dto.SelectTableAttributesDTO;
 import dbms.repository.IRepository;
@@ -736,6 +737,11 @@ public class Service implements IService{
         }
         return -1;
 
+    }
+
+    @Override
+    public List<Record> groupBy(String databaseTableName, GroupByDTO groupByDTO) {
+        return null;
     }
 
 }
