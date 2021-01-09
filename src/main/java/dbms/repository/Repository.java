@@ -128,6 +128,14 @@ public class Repository implements IRepository {
     }
 
     @Override
+    public boolean existsIndex(String databaseName, String tableName, String attributeName) {
+        List<Index> indexList = getAllIndexesForDBandTable(databaseName, tableName);
+        String possibleIndexFilename = databaseName + "_" + tableName + "_" + attributeName + "Ind";
+        boolean existsIndex = indexList.stream().anyMatch(index -> index.getFilename().equals(possibleIndexFilename));
+        return existsIndex;
+    }
+
+    @Override
     public List<Attribute> findAllAttributesForDB_Table(String databaseName, String tableName) {
 
 

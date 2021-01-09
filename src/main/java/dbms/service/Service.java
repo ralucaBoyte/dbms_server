@@ -142,18 +142,22 @@ public class Service implements IService{
 
     @Override
     public Index addIndex(Index index, String databaseName, String tableName) {
-        String fileName = index.getAttributeList().stream()
+        String indexFilename = databaseName + "_" + tableName + "_";
+
+        String indexName = index.getAttributeList().stream()
                 .map(Attribute::getName)
-                .collect(Collectors.joining(""));
-        fileName += "_" + databaseName + "_" + tableName;
-        index.setFilename(fileName);
+                .collect(Collectors.joining("|"));
+        indexName += "Ind";
+        indexFilename += indexName;
+        index.setFilename(indexFilename);
+        index.setName(indexName);
         String databaseTableName = databaseName + "_" + tableName;
         Index indexToBeAdded = repository.addIndex(index, databaseName, tableName);
 
         List<Attribute> attributeList = repository.findAllAttributesForDB_Table(databaseName, tableName);
         List<Record> recordList = findAllRecords(databaseTableName);
         if(recordList != null){
-            addIndexFile(fileName, attributeList, indexToBeAdded, recordList);
+            addIndexFile(indexFilename, attributeList, indexToBeAdded, recordList);
         }
         return indexToBeAdded;
     }
@@ -741,7 +745,146 @@ public class Service implements IService{
 
     @Override
     public List<Record> groupBy(String databaseTableName, GroupByDTO groupByDTO) {
-        return null;
+        String databaseName = databaseTableName.split("_")[0];
+        String tableName = databaseTableName.split("_")[1];
+        List<Pair> selectGroupByAttributes = groupByDTO.getSelectGroupByAttributes();
+        List<String> groupByAttributes = groupByDTO.getGroupByAttributes();
+
+        List<Record> records = new ArrayList<>();
+        //CHECK IF WE HAVE INDEX ON GROUP BY ATTRIBUTES
+
+        //GROUP BY ON ONE COLUMN
+        Map<String, String> groupByResult;
+        ObjectMapper mapper = new ObjectMapper();
+        //String groupByAttribute = groupByAttributes.get(0);
+
+        String groupByAttribute = String.join("|", groupByAttributes);
+
+        String indexFileName = databaseTableName + "_" + groupByAttribute + "Ind";
+        boolean existsIndex = repository.existsIndex(databaseName, tableName, groupByAttribute);
+
+        if(existsIndex) {
+            groupByResult = repository.findAllRecords(indexFileName);
+            records = aggregateFunctionResult(databaseName, tableName, groupByResult, selectGroupByAttributes);
+        }
+        else{
+            Index indexToBeAdded = new Index();
+            String indexName = groupByAttribute + "Ind";
+            List<Attribute> attributeList = repository.findAllAttributesForDB_Table(databaseName, tableName);
+            List<Attribute> indexAttributeList = attributeList.stream().filter(attribute -> groupByAttributes.contains(attribute.getName())).collect(Collectors.toList());
+            indexToBeAdded.setName(indexName);
+            indexToBeAdded.setFilename(indexFileName);
+            indexToBeAdded.setAttributeList(indexAttributeList);
+
+            addIndex(indexToBeAdded, databaseName, tableName);
+            groupByResult = repository.findAllRecords(indexFileName);
+            records = aggregateFunctionResult(databaseName, tableName, groupByResult, selectGroupByAttributes);
+
+        }
+
+
+        return records;
+    }
+
+    private List<Record> aggregateFunctionResult(String databaseName, String tableName, Map<String, String> groupByResult, List<Pair> selectAttributes){
+        ObjectMapper mapper = new ObjectMapper();
+        List<Record> records = new ArrayList<>();
+
+        for (Map.Entry<String,String> entry : groupByResult.entrySet()){
+
+            Record groupByRecord = new Record();
+
+            String groupByAttributeKey = entry.getKey();
+            String groupByAttributesValues = entry.getValue();
+
+            groupByRecord.setKey(groupByAttributeKey);
+            String recordValue = "";
+
+            for(Pair selectAttribute: selectAttributes){
+                String attributeName = (String) selectAttribute.getKey();
+
+                List<String> valuesForGivenAttribute = valuesForGivenAttributeName(databaseName, tableName, groupByAttributesValues, attributeName);
+
+                AggregateFunctions aggregateFunction;
+                if(selectAttribute.getValue() != ""){
+                    aggregateFunction = mapper.convertValue(selectAttribute.getValue(), AggregateFunctions.class);
+                    String finalValueAfterComputingAggregateFunction = computeAggregateFunctionOnGivenList(valuesForGivenAttribute, aggregateFunction);
+                    recordValue += finalValueAfterComputingAggregateFunction + ";";
+                }
+                else{
+                    recordValue += valuesForGivenAttribute.get(0) + ";";
+                }
+
+            }
+
+            recordValue = recordValue.substring(0, recordValue.length() - 1);
+            groupByRecord.setValue(recordValue);
+            records.add(groupByRecord);
+        }
+        return records;
+    }
+
+    private String computeAggregateFunctionOnGivenList(List<String> valuesForGivenAttribute, AggregateFunctions aggregateFunctions){
+        String aggregateFunctionResult = "";
+        List<Double>valuesForGivenAttributeAsNumbers = valuesForGivenAttribute.stream().map(Double::parseDouble).collect(Collectors.toList());
+
+        switch (aggregateFunctions){
+            case AVG:
+                Double average = valuesForGivenAttributeAsNumbers.stream().mapToDouble(Double::doubleValue).average().getAsDouble();
+                aggregateFunctionResult = String.valueOf(average);
+                break;
+            case MAX:
+                Double max = valuesForGivenAttributeAsNumbers.stream().mapToDouble(Double::doubleValue).max().getAsDouble();
+                aggregateFunctionResult = String.valueOf(max);
+                break;
+            case MIN:
+                Double min = valuesForGivenAttributeAsNumbers.stream().mapToDouble(Double::doubleValue).min().getAsDouble();
+                aggregateFunctionResult = String.valueOf(min);
+                break;
+            case SUM:
+                Double sum = valuesForGivenAttributeAsNumbers.stream().mapToDouble(Double::doubleValue).sum();
+                aggregateFunctionResult = String.valueOf(sum);
+                break;
+            case COUNT:
+                aggregateFunctionResult = String.valueOf(valuesForGivenAttribute.size());
+                break;
+        }
+        return aggregateFunctionResult;
+    }
+
+    private List<Record> getRecordsForGivenPK(String pks, String databaseName, String tableName){
+        List<String> primaryKeys = Arrays.asList(pks.split("#"));
+        List<Record> records = new ArrayList<>();
+
+        for(String pk: primaryKeys){
+            Record record = new Record();
+            record.setKey(pk);
+            List<String> values = repository.getValuesForGivenKey(databaseName + "_" + tableName, pk);
+            String concatenatedValues = values.stream().map(Object::toString)
+                    .collect(Collectors.joining(";"));
+            record.setValue(concatenatedValues);
+            records.add(record);
+        }
+
+        return records;
+    }
+
+    private List<String> valuesForGivenAttributeName(String databaseName, String tableName, String primaryKeys, String attributeName){
+        Table table = repository.getTableByDatabaseName(databaseName, tableName);
+        Integer positionOfGivenAttributeInATable = getPositionOfGivenAttribute(table, attributeName);
+
+        List<Record> recordsForTable = getRecordsForGivenPK(primaryKeys, databaseName, tableName);
+        List<String> valuesForGivenAttribute = new ArrayList<>();
+
+        for (Record record: recordsForTable) {
+            if (positionOfGivenAttributeInATable == 0){
+                valuesForGivenAttribute.add(record.getKey());
+            }
+            else{
+                valuesForGivenAttribute.add(record.getValue().split(";")[positionOfGivenAttributeInATable-1]);
+            }
+        }
+        return valuesForGivenAttribute;
     }
 
 }
