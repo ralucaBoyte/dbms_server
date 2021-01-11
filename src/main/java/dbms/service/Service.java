@@ -826,22 +826,26 @@ public class Service implements IService{
 
     private String computeAggregateFunctionOnGivenList(List<String> valuesForGivenAttribute, AggregateFunctions aggregateFunctions){
         String aggregateFunctionResult = "";
-        List<Double>valuesForGivenAttributeAsNumbers = valuesForGivenAttribute.stream().map(Double::parseDouble).collect(Collectors.toList());
+        List<Double>valuesForGivenAttributeAsNumbers;
 
         switch (aggregateFunctions){
             case AVG:
+                valuesForGivenAttributeAsNumbers = valuesForGivenAttribute.stream().map(Double::parseDouble).collect(Collectors.toList());
                 Double average = valuesForGivenAttributeAsNumbers.stream().mapToDouble(Double::doubleValue).average().getAsDouble();
                 aggregateFunctionResult = String.valueOf(average);
                 break;
             case MAX:
+                valuesForGivenAttributeAsNumbers = valuesForGivenAttribute.stream().map(Double::parseDouble).collect(Collectors.toList());
                 Double max = valuesForGivenAttributeAsNumbers.stream().mapToDouble(Double::doubleValue).max().getAsDouble();
                 aggregateFunctionResult = String.valueOf(max);
                 break;
             case MIN:
+                valuesForGivenAttributeAsNumbers = valuesForGivenAttribute.stream().map(Double::parseDouble).collect(Collectors.toList());
                 Double min = valuesForGivenAttributeAsNumbers.stream().mapToDouble(Double::doubleValue).min().getAsDouble();
                 aggregateFunctionResult = String.valueOf(min);
                 break;
             case SUM:
+                valuesForGivenAttributeAsNumbers = valuesForGivenAttribute.stream().map(Double::parseDouble).collect(Collectors.toList());
                 Double sum = valuesForGivenAttributeAsNumbers.stream().mapToDouble(Double::doubleValue).sum();
                 aggregateFunctionResult = String.valueOf(sum);
                 break;
