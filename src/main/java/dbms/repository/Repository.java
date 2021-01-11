@@ -128,6 +128,24 @@ public class Repository implements IRepository {
     }
 
     @Override
+    public void removeIndex(String databaseName, String tableName, String indexFilename) {
+        for(Database database: databaseList){
+            if(database.getName().equals(databaseName)){
+                List<Table> tableList = database.getTables();
+                for(Table table: tableList){
+                    if (table.getName().equals(tableName)){
+                        List<Index> indexList = table.getIndexList();
+                        indexList.removeIf(index -> index.getFilename().equals(indexFilename));
+                    }
+                }
+            }
+        }
+
+        Utils.writeToJSONFile(file,objectMapper,databaseList);
+        jedisConnection.del(indexFilename);
+    }
+
+    @Override
     public boolean existsIndex(String databaseName, String tableName, String attributeName) {
         List<Index> indexList = getAllIndexesForDBandTable(databaseName, tableName);
         String possibleIndexFilename = databaseName + "_" + tableName + "_" + attributeName + "Ind";

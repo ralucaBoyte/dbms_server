@@ -779,6 +779,7 @@ public class Service implements IService{
             addIndex(indexToBeAdded, databaseName, tableName);
             groupByResult = repository.findAllRecords(indexFileName);
             records = aggregateFunctionResult(databaseName, tableName, groupByResult, selectGroupByAttributes);
+            repository.removeIndex(databaseName, tableName, indexFileName);
 
         }
 
@@ -821,6 +822,7 @@ public class Service implements IService{
             groupByRecord.setValue(recordValue);
             records.add(groupByRecord);
         }
+
         return records;
     }
 

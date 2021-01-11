@@ -23,6 +23,8 @@ public interface IRepository {
 
     Index addIndex(Index index, String databaseName, String tableName);
 
+    void removeIndex(String databaseName, String tableName, String indexFilename);
+
     boolean existsIndex(String databaseName, String tableName, String attributeName);
 
     List<Attribute> findAllAttributesForDB_Table(String databaseName, String tableName);
