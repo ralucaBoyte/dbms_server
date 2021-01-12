@@ -550,6 +550,7 @@ public class Service implements IService{
 
         for (Pair attributeCondition : attributeConditions) {
             String attributeName = (String) attributeCondition.getKey();
+            attributeName = attributeName.split("\\.")[1];
 
             List<Condition> conditions = new ArrayList<>();
             List list = mapper.convertValue(attributeCondition.getValue(), List.class);
