@@ -1,1 +1,225 @@
-[{"name":"D1","tables":[{"name":"Job","filename":"Job","attributeList":[{"name":"job_id","type":"INTEGER","notNull":0,"length":0,"isUnique":0,"isPrimaryKey":1,"foreignKey":null},{"name":"job_title","type":"VARCHAR","notNull":0,"length":256,"isUnique":0,"isPrimaryKey":0,"foreignKey":null},{"name":"salary","type":"INTEGER","notNull":0,"length":0,"isUnique":0,"isPrimaryKey":0,"foreignKey":null}],"indexList":[{"name":"job_idInd","filename":"D1_Job_job_idInd","isUnique":0,"attributeList":[{"name":"job_id","type":"INTEGER","notNull":0,"length":0,"isUnique":0,"isPrimaryKey":1,"foreignKey":null}]},{"name":"job_title|salaryInd","filename":"D1_Job_job_title|salaryInd","isUnique":null,"attributeList":[{"name":"job_title","type":"VARCHAR","notNull":0,"length":256,"isUnique":0,"isPrimaryKey":0,"foreignKey":null},{"name":"salary","type":"INTEGER","notNull":0,"length":0,"isUnique":0,"isPrimaryKey":0,"foreignKey":null}]},{"name":"Ind","filename":"D1_Job_Ind","isUnique":null,"attributeList":[]},{"name":"Ind","filename":"D1_Job_Ind","isUnique":null,"attributeList":[]},{"name":"Ind","filename":"D1_Job_Ind","isUnique":null,"attributeList":[]},{"name":"Ind","filename":"D1_Job_Ind","isUnique":null,"attributeList":[]},{"name":"Ind","filename":"D1_Job_Ind","isUnique":null,"attributeList":[]},{"name":"Ind","filename":"D1_Job_Ind","isUnique":null,"attributeList":[]}]},{"name":"Customers","filename":"Customers","attributeList":[{"name":"customer_id","type":"INTEGER","notNull":0,"length":0,"isUnique":0,"isPrimaryKey":1,"foreignKey":null},{"name":"name","type":"VARCHAR","notNull":0,"length":256,"isUnique":0,"isPrimaryKey":0,"foreignKey":null},{"name":"adress","type":"VARCHAR","notNull":0,"length":256,"isUnique":0,"isPrimaryKey":0,"foreignKey":null},{"name":"city","type":"VARCHAR","notNull":0,"length":256,"isUnique":0,"isPrimaryKey":0,"foreignKey":null},{"name":"postal_code","type":"INTEGER","notNull":0,"length":0,"isUnique":0,"isPrimaryKey":0,"foreignKey":null}],"indexList":[{"name":"customer_idInd","filename":"D1_Customers_customer_idInd","isUnique":0,"attributeList":[{"name":"customer_id","type":"INTEGER","notNull":0,"length":0,"isUnique":0,"isPrimaryKey":1,"foreignKey":null}]}]},{"name":"Task","filename":"Task","attributeList":[{"name":"task_id","type":"INTEGER","notNull":0,"length":0,"isUnique":0,"isPrimaryKey":1,"foreignKey":null},{"name":"name","type":"VARCHAR","notNull":0,"length":256,"isUnique":0,"isPrimaryKey":0,"foreignKey":null},{"name":"job_id","type":"INTEGER","notNull":0,"length":0,"isUnique":0,"isPrimaryKey":0,"foreignKey":{"key":"Job","value":"job_id"}}],"indexList":[{"name":"job_idInd","filename":"D1_Task_job_idInd","isUnique":0,"attributeList":[{"name":"job_id","type":"INTEGER","notNull":0,"length":0,"isUnique":0,"isPrimaryKey":0,"foreignKey":{"key":"Job","value":"job_id"}}]},{"name":"task_idInd","filename":"D1_Task_task_idInd","isUnique":0,"attributeList":[{"name":"task_id","type":"INTEGER","notNull":0,"length":0,"isUnique":0,"isPrimaryKey":1,"foreignKey":null}]}]}]}]
+[
+  {
+    "name": "D1",
+    "tables": [
+      {
+        "name": "Job",
+        "filename": "Job",
+        "attributeList": [
+          {
+            "name": "job_id",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 1,
+            "foreignKey": null
+          },
+          {
+            "name": "job_title",
+            "type": "VARCHAR",
+            "notNull": 0,
+            "length": 256,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          },
+          {
+            "name": "salary",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          }
+        ],
+        "indexList": [
+          {
+            "name": "job_idInd",
+            "filename": "D1_Job_job_idInd",
+            "isUnique": 0,
+            "attributeList": [
+              {
+                "name": "job_id",
+                "type": "INTEGER",
+                "notNull": 0,
+                "length": 0,
+                "isUnique": 0,
+                "isPrimaryKey": 1,
+                "foreignKey": null
+              }
+            ]
+          },
+          {
+            "name": "job_title|salaryInd",
+            "filename": "D1_Job_job_title|salaryInd",
+            "isUnique": null,
+            "attributeList": [
+              {
+                "name": "job_title",
+                "type": "VARCHAR",
+                "notNull": 0,
+                "length": 256,
+                "isUnique": 0,
+                "isPrimaryKey": 0,
+                "foreignKey": null
+              },
+              {
+                "name": "salary",
+                "type": "INTEGER",
+                "notNull": 0,
+                "length": 0,
+                "isUnique": 0,
+                "isPrimaryKey": 0,
+                "foreignKey": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Customers",
+        "filename": "Customers",
+        "attributeList": [
+          {
+            "name": "customer_id",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 1,
+            "foreignKey": null
+          },
+          {
+            "name": "name",
+            "type": "VARCHAR",
+            "notNull": 0,
+            "length": 256,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          },
+          {
+            "name": "adress",
+            "type": "VARCHAR",
+            "notNull": 0,
+            "length": 256,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          },
+          {
+            "name": "city",
+            "type": "VARCHAR",
+            "notNull": 0,
+            "length": 256,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          },
+          {
+            "name": "postal_code",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          }
+        ],
+        "indexList": [
+          {
+            "name": "customer_idInd",
+            "filename": "D1_Customers_customer_idInd",
+            "isUnique": 0,
+            "attributeList": [
+              {
+                "name": "customer_id",
+                "type": "INTEGER",
+                "notNull": 0,
+                "length": 0,
+                "isUnique": 0,
+                "isPrimaryKey": 1,
+                "foreignKey": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Task",
+        "filename": "Task",
+        "attributeList": [
+          {
+            "name": "task_id",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 1,
+            "foreignKey": null
+          },
+          {
+            "name": "name",
+            "type": "VARCHAR",
+            "notNull": 0,
+            "length": 256,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          },
+          {
+            "name": "job_id",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": {
+              "key": "Job",
+              "value": "job_id"
+            }
+          }
+        ],
+        "indexList": [
+          {
+            "name": "job_idInd",
+            "filename": "D1_Task_job_idInd",
+            "isUnique": 0,
+            "attributeList": [
+              {
+                "name": "job_id",
+                "type": "INTEGER",
+                "notNull": 0,
+                "length": 0,
+                "isUnique": 0,
+                "isPrimaryKey": 0,
+                "foreignKey": {
+                  "key": "Job",
+                  "value": "job_id"
+                }
+              }
+            ]
+          },
+          {
+            "name": "task_idInd",
+            "filename": "D1_Task_task_idInd",
+            "isUnique": 0,
+            "attributeList": [
+              {
+                "name": "task_id",
+                "type": "INTEGER",
+                "notNull": 0,
+                "length": 0,
+                "isUnique": 0,
+                "isPrimaryKey": 1,
+                "foreignKey": null
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

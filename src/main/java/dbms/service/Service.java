@@ -774,7 +774,7 @@ public class Service implements IService{
             Index indexToBeAdded = new Index();
             String indexName = groupByAttribute + "Ind";
             List<Attribute> attributeList = repository.findAllAttributesForDB_Table(databaseName, tableName);
-            List<Attribute> indexAttributeList = attributeList.stream().filter(attribute -> groupByAttributes.contains(attribute.getName())).collect(Collectors.toList());
+            List<Attribute> indexAttributeList = attributeList.stream().filter(attribute -> groupByAttributes.contains(tableName+"."+attribute.getName())).collect(Collectors.toList());
             indexToBeAdded.setName(indexName);
             indexToBeAdded.setFilename(indexFileName);
             indexToBeAdded.setAttributeList(indexAttributeList);
