@@ -74,16 +74,6 @@ public class SelectTableAttributesDTO {
         this.distinct = distinct;
     }
 
-    @Override
-    public String toString() {
-        return "SelectTableAttributesDTO{" +
-                "tableName='" + tableName + '\'' +
-                ", attributeConditions=" + attributeConditions +
-                ", distinct=" + distinct +
-                ", join='" + join + '\'' +
-                '}';
-    }
-
     public List<Pair> getSelectGroupByAttributes() {
         return selectGroupByAttributes;
     }
@@ -106,5 +96,18 @@ public class SelectTableAttributesDTO {
 
     public void setLimit(Integer limit) {
         this.limit = limit;
+    }
+
+    @Override
+    public String toString() {
+        return "SelectTableAttributesDTO{" +
+                "tableName='" + tableName + '\'' +
+                ", selectGroupByAttributes=" + selectGroupByAttributes +
+                ", attributeConditions=" + attributeConditions +
+                ", groupByAttributes=" + groupByAttributes +
+                ", distinct=" + distinct +
+                ", join='" + join + '\'' +
+                ", limit=" + limit +
+                '}';
     }
 }

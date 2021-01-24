@@ -756,7 +756,12 @@ public class Service implements IService{
         ObjectMapper mapper = new ObjectMapper();
         //String groupByAttribute = groupByAttributes.get(0);
 
-        String groupByAttribute = String.join("|", groupByAttributes);
+
+        List<String> groupByAttr = groupByAttributes.stream().map(attribute ->{
+            return attribute.split("\\.")[1];
+        }).collect(Collectors.toList());
+
+        String groupByAttribute = String.join("|", groupByAttr);
 
         String indexFileName = databaseTableName + "_" + groupByAttribute + "Ind";
         boolean existsIndex = repository.existsIndex(databaseName, tableName, groupByAttribute);
@@ -901,7 +906,7 @@ public class Service implements IService{
             String recordValue = "";
 
             for(Pair selectAttribute: selectAttributes){
-                String attributeName = (String) selectAttribute.getKey();
+                String attributeName = selectAttribute.getKey().toString().split("\\.")[1];
 
                 List<String> valuesForGivenAttribute = valuesForGivenAttributeName(databaseName, tableName, groupByAttributesValues, attributeName);
 

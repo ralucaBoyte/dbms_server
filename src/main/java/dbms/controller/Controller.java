@@ -79,7 +79,6 @@ public class Controller {
     public List<Record> select(@RequestBody SelectTableAttributesDTO selectTableAttributes, @PathVariable("databaseName") final String databaseName){
         List<Record> selectedRecords = service.select(selectTableAttributes, databaseName);
         Integer limit = selectTableAttributes.getLimit();
-
         if(limit == 0){
             return selectedRecords;
         }
@@ -95,6 +94,7 @@ public class Controller {
 
     @RequestMapping(value = "/join/groupBy/{databaseName}", method = RequestMethod.POST)
     public List<Record> groupBy(@RequestBody SelectTableAttributesDTO selectTableAttributesDTO, @PathVariable("databaseName") final String databaseName){
+        System.out.println(selectTableAttributesDTO);
         return service.joinGroupBy(selectTableAttributesDTO, databaseName);
     }
 }
