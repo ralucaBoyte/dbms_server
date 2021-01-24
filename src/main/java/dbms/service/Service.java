@@ -3,10 +3,7 @@ package dbms.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dbms.domain.*;
-import dbms.dto.DatabaseTableDTO;
-import dbms.dto.GroupByDTO;
-import dbms.dto.RecordMessageDTO;
-import dbms.dto.SelectTableAttributesDTO;
+import dbms.dto.*;
 import dbms.repository.IRepository;
 import dbms.utils.IndexedNestedJoin;
 import dbms.utils.Join;
@@ -786,6 +783,107 @@ public class Service implements IService{
 
 
         return records;
+    }
+
+    @Override
+    public List<Record> joinGroupBy(SelectTableAttributesDTO selectTableAttributesDTO, String databaseName) {
+        List<String> tableNames = Arrays.asList(selectTableAttributesDTO.getTableName().split("\\|"));
+        List<Pair> selectGroupByAttributes = selectTableAttributesDTO.getSelectGroupByAttributes();
+        List<Pair> attributesConditions = selectTableAttributesDTO.getAttributeConditions();
+        List<String> groupByAttributes = selectTableAttributesDTO.getGroupByAttributes();
+
+
+        //FOR NOW, WE ONLY HAVE SELECT ON MULTIPLE TABLES (INNER JOIN)
+        List<Record> joinedSelectRecords = select(selectTableAttributesDTO, databaseName);
+
+        List<Integer> selectGroupByAttributesPositions = new ArrayList<>();
+        selectGroupByAttributes.forEach(selectGroupByAttribute -> {
+            selectGroupByAttributesPositions.add(getIndexOfSelectGroupByAttributeInAttributeConditions(selectGroupByAttribute, attributesConditions));
+        });
+
+        return getRecordsFromGroupByUsingSelectJoin(selectGroupByAttributes, selectGroupByAttributesPositions, joinedSelectRecords);
+    }
+
+    //TO BE DONE
+    private List<Record> getRecordsFromGroupByUsingSelectJoin(List<Pair> selectGroupByAttributes, List<Integer> selectGroupByAttributesPositions, List<Record> selectRecords) {
+
+        //ORDER RECORDS BASED ON VALUES FROM GROUP BY
+        selectRecords.sort((record1, record2) -> {
+            String r1 = "";
+            String r2 = "";
+            for (Integer index : selectGroupByAttributesPositions) {
+                r1 += record1.getValue().split(";")[index];
+                r2 += record2.getValue().split(";")[index];
+            }
+            return r1.compareTo(r2);
+        });
+
+
+
+        //WE GROUP RECORDS BASED ON GROUP BY ATTRIBUTES
+        Map<Object, List<Record>> groupedRecords = new HashMap<>();
+
+        for(Record record: selectRecords){
+            String key = "";
+            for (Integer index : selectGroupByAttributesPositions) {
+                key += record.getValue().split(";")[index] + ";";
+            }
+            key = key.substring(0, key.length()-1);
+
+            groupedRecords.computeIfAbsent(key, k -> new ArrayList<>()).add(record);
+        }
+
+        //WE COMPUTE AGGREGATE FUNCTIONS ON GROUPED RECORDS
+
+        String recordValue = "";
+        String recordKey = "";
+
+        List<Record> finalGroupedRecords = new ArrayList<>();
+
+        AggregateFunctions aggregateFunction;
+        ObjectMapper mapper = new ObjectMapper();
+        for (Map.Entry<Object,List<Record>> entry : groupedRecords.entrySet())
+        {
+            recordValue = "";
+            recordKey = entry.getKey().toString();
+
+            for(int i = 0; i < selectGroupByAttributes.size(); i++){
+                Integer index = selectGroupByAttributesPositions.get(i);
+                List<String> givenValuesForCertainPosition = getValuesFromGivenPosition(entry.getValue(), index);
+
+                if(selectGroupByAttributes.get(i).getValue() != ""){
+                    aggregateFunction = mapper.convertValue(selectGroupByAttributes.get(i).getValue(), AggregateFunctions.class);
+                    String finalValueAfterComputingAggregateFunction = computeAggregateFunctionOnGivenList(givenValuesForCertainPosition, aggregateFunction);
+                    recordValue += finalValueAfterComputingAggregateFunction + ";";
+                }
+                else {
+                    recordValue += givenValuesForCertainPosition.get(0) + ';';
+                }
+
+            }
+            recordValue = recordValue.substring(0, recordValue.length()-1);
+            finalGroupedRecords.add(new Record(recordKey, recordValue));
+        }
+
+        return finalGroupedRecords;
+    }
+
+    private List<String> getValuesFromGivenPosition(List<Record> selectedRecords, Integer position){
+        List<String> valuesFromGivenPosition = new ArrayList<>();
+        for(Record record: selectedRecords){
+            valuesFromGivenPosition.add(record.getValue().split(";")[position]);
+        }
+
+        return valuesFromGivenPosition;
+    }
+
+    private Integer getIndexOfSelectGroupByAttributeInAttributeConditions(Pair selectAttribute, List<Pair> attributeConditions){
+        for (int i = 0; i < attributeConditions.size(); i++){
+            if (attributeConditions.get(i).getKey().equals(selectAttribute.getKey())){
+                return i;
+            }
+        }
+        return -1;
     }
 
     private List<Record> aggregateFunctionResult(String databaseName, String tableName, Map<String, String> groupByResult, List<Pair> selectAttributes){

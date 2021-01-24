@@ -28,5 +28,6 @@ public interface IService {
     Integer getPositionOfFKAttribute(Table R, Table S);
     
     List<Record> groupBy(String databaseTableName, GroupByDTO groupByDTO);
+    List<Record> joinGroupBy(SelectTableAttributesDTO selectTableAttributesDTO, String databaseName);
 
 }

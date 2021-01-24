@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import dbms.service.IService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -76,7 +77,15 @@ public class Controller {
 
     @RequestMapping(value = "/select/{databaseName}", method = RequestMethod.POST)
     public List<Record> select(@RequestBody SelectTableAttributesDTO selectTableAttributes, @PathVariable("databaseName") final String databaseName){
-        return service.select(selectTableAttributes, databaseName);
+        List<Record> selectedRecords = service.select(selectTableAttributes, databaseName);
+        Integer limit = selectTableAttributes.getLimit();
+
+        if(limit == 0){
+            return selectedRecords;
+        }
+        else{
+            return selectedRecords.stream().limit(limit).collect(Collectors.toList());
+        }
     }
 
     @RequestMapping(value = "/select/groupBy/{databaseTableName}", method = RequestMethod.POST)
@@ -84,4 +93,8 @@ public class Controller {
         return service.groupBy(databaseTableName, groupByDTO);
     }
 
+    @RequestMapping(value = "/join/groupBy/{databaseName}", method = RequestMethod.POST)
+    public List<Record> groupBy(@RequestBody SelectTableAttributesDTO selectTableAttributesDTO, @PathVariable("databaseName") final String databaseName){
+        return service.joinGroupBy(selectTableAttributesDTO, databaseName);
+    }
 }
