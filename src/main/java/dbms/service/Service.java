@@ -596,7 +596,33 @@ public class Service implements IService{
 
         if(tableNames.size() == 1) {
             List<Record> recordsResults = selectForTable(selectTableAttributes, databaseName);
-            return sort(recordsResults, selectTableAttributes.isDistinct(), "values");
+            List<Record> sortedReccordsByValues = sort(recordsResults, selectTableAttributes.isDistinct(), "values");
+
+            if(selectTableAttributes.getOrderBy().isEmpty()){
+                return sortedReccordsByValues;
+            }
+            else{
+                String attributeName = selectTableAttributes.getOrderBy().split("\\.")[1];
+                Integer position = -1;
+                for(int i = 0; i < selectTableAttributes.getAttributeConditions().size(); i++) {
+                    Pair attrCond = selectTableAttributes.getAttributeConditions().get(i);
+
+                    if (attrCond.getKey().toString().split("\\.")[1].equals(attributeName)) {
+                        position = i;
+                        break;
+                    }
+
+                }
+
+                Integer finalPosition = position;
+                sortedReccordsByValues.sort((record1, record2) -> {
+                    String r1 = record1.getValue().split(";")[finalPosition];
+                    String r2 = record2.getValue().split(";")[finalPosition];
+                    return r1.compareTo(r2);
+                });
+                return sortedReccordsByValues;
+
+            }
         }
         else{
             Table R = repository.getTableByDatabaseName(databaseName, tableNames.get(0));

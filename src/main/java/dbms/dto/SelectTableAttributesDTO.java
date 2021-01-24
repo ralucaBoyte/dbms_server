@@ -12,6 +12,7 @@ public class SelectTableAttributesDTO {
     private boolean distinct;
     private String join;
     private Integer limit;
+    private String orderBy;
 
     public SelectTableAttributesDTO(String tableName, List<Pair> selectGroupByAttributes, List<Pair> attributeConditions, List<String> groupByAttributes, boolean distinct, String join) {
         this.tableName = tableName;
@@ -30,6 +31,17 @@ public class SelectTableAttributesDTO {
         this.distinct = distinct;
         this.join = join;
         this.limit = limit;
+    }
+
+    public SelectTableAttributesDTO(String tableName, List<Pair> selectGroupByAttributes, List<Pair> attributeConditions, List<String> groupByAttributes, boolean distinct, String join, Integer limit, String orderBy) {
+        this.tableName = tableName;
+        this.selectGroupByAttributes = selectGroupByAttributes;
+        this.attributeConditions = attributeConditions;
+        this.groupByAttributes = groupByAttributes;
+        this.distinct = distinct;
+        this.join = join;
+        this.limit = limit;
+        this.orderBy = orderBy;
     }
 
     public String getJoin() {
@@ -98,6 +110,14 @@ public class SelectTableAttributesDTO {
         this.limit = limit;
     }
 
+    public String getOrderBy() {
+        return orderBy;
+    }
+
+    public void setOrderBy(String orderBy) {
+        this.orderBy = orderBy;
+    }
+
     @Override
     public String toString() {
         return "SelectTableAttributesDTO{" +
@@ -108,6 +128,7 @@ public class SelectTableAttributesDTO {
                 ", distinct=" + distinct +
                 ", join='" + join + '\'' +
                 ", limit=" + limit +
+                ", orderBy='" + orderBy + '\'' +
                 '}';
     }
 }
