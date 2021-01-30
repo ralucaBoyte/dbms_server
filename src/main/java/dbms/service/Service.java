@@ -508,11 +508,20 @@ public class Service implements IService{
                     break;
                 case LIKE:
                     String recordAttribute = wholeRecord.get(position);
-                    String regex = condition.getValue();
+                    String pattern = condition.getValue();
+                    String regex = "";
+                    Integer modPosition = pattern.indexOf("%");
+                    if(modPosition == 0){
+                        regex = ".*" + pattern.charAt(1) + "$";
+                    }
+                    else{
+                        regex = pattern.charAt(0) + ".*" + "$";
+                    }
+
 
                     Pattern p = Pattern.compile(regex);
                     Matcher m = p.matcher(recordAttribute);
-                    boolean matches = m.lookingAt();
+                    boolean matches = m.matches();
 
                     if (matches){
                         i++;

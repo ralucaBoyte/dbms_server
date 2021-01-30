@@ -221,5 +221,225 @@
         ]
       }
     ]
+  },
+  {
+    "name": "Library",
+    "tables": [
+      {
+        "name": "Students",
+        "filename": "Students",
+        "attributeList": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "notNull": 1,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 1,
+            "foreignKey": null
+          },
+          {
+            "name": "name",
+            "type": "VARCHAR",
+            "notNull": 0,
+            "length": 256,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          },
+          {
+            "name": "gender",
+            "type": "VARCHAR",
+            "notNull": 0,
+            "length": 3,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          },
+          {
+            "name": "group",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          }
+        ],
+        "indexList": [
+          {
+            "name": "idInd",
+            "filename": "Library_Students_idInd",
+            "isUnique": 0,
+            "attributeList": [
+              {
+                "name": "id",
+                "type": "INTEGER",
+                "notNull": 1,
+                "length": 0,
+                "isUnique": 0,
+                "isPrimaryKey": 1,
+                "foreignKey": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Books",
+        "filename": "Books",
+        "attributeList": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "notNull": 1,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 1,
+            "foreignKey": null
+          },
+          {
+            "name": "name",
+            "type": "VARCHAR",
+            "notNull": 0,
+            "length": 256,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          },
+          {
+            "name": "author",
+            "type": "VARCHAR",
+            "notNull": 0,
+            "length": 256,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          }
+        ],
+        "indexList": [
+          {
+            "name": "idInd",
+            "filename": "Library_Books_idInd",
+            "isUnique": 0,
+            "attributeList": [
+              {
+                "name": "id",
+                "type": "INTEGER",
+                "notNull": 1,
+                "length": 0,
+                "isUnique": 0,
+                "isPrimaryKey": 1,
+                "foreignKey": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Borrows",
+        "filename": "Borrows",
+        "attributeList": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "notNull": 1,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 1,
+            "foreignKey": null
+          },
+          {
+            "name": "student_id",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": {
+              "key": "Students",
+              "value": "id"
+            }
+          },
+          {
+            "name": "book_id",
+            "type": "INTEGER",
+            "notNull": 0,
+            "length": 0,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": {
+              "key": "Books",
+              "value": "id"
+            }
+          },
+          {
+            "name": "location",
+            "type": "VARCHAR",
+            "notNull": 0,
+            "length": 256,
+            "isUnique": 0,
+            "isPrimaryKey": 0,
+            "foreignKey": null
+          }
+        ],
+        "indexList": [
+          {
+            "name": "student_idInd",
+            "filename": "Library_Borrows_student_idInd",
+            "isUnique": 0,
+            "attributeList": [
+              {
+                "name": "student_id",
+                "type": "INTEGER",
+                "notNull": 0,
+                "length": 0,
+                "isUnique": 0,
+                "isPrimaryKey": 0,
+                "foreignKey": {
+                  "key": "Students",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          {
+            "name": "book_idInd",
+            "filename": "Library_Borrows_book_idInd",
+            "isUnique": 0,
+            "attributeList": [
+              {
+                "name": "book_id",
+                "type": "INTEGER",
+                "notNull": 0,
+                "length": 0,
+                "isUnique": 0,
+                "isPrimaryKey": 0,
+                "foreignKey": {
+                  "key": "Books",
+                  "value": "id"
+                }
+              }
+            ]
+          },
+          {
+            "name": "idInd",
+            "filename": "Library_Borrows_idInd",
+            "isUnique": 0,
+            "attributeList": [
+              {
+                "name": "id",
+                "type": "INTEGER",
+                "notNull": 1,
+                "length": 0,
+                "isUnique": 0,
+                "isPrimaryKey": 1,
+                "foreignKey": null
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
