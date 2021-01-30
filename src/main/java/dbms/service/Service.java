@@ -12,6 +12,8 @@ import org.apache.tomcat.util.buf.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -502,6 +504,21 @@ public class Service implements IService{
                     }
                     else{
                         i++;
+                    }
+                    break;
+                case LIKE:
+                    String recordAttribute = wholeRecord.get(position);
+                    String regex = condition.getValue();
+
+                    Pattern p = Pattern.compile(regex);
+                    Matcher m = p.matcher(recordAttribute);
+                    boolean matches = m.lookingAt();
+
+                    if (matches){
+                        i++;
+                    }
+                    else {
+                        records.remove(i);
                     }
                     break;
 
